@@ -12,7 +12,9 @@ export default function OnboardPage() {
 
   const [status, setStatus] = useState<string | null>(null);
   const [voterKey, setVoterKey] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [voterLink, setVoterLink] = useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedRaw, setCopiedRaw] = useState(false);
 
   async function handleGenerate() {
     if (!address) return;
@@ -27,9 +29,11 @@ export default function OnboardPage() {
       const voter: Voter = { address: address.toLowerCase(), epk };
       const serialized = serializeVoter(voter);
 
+      const link = `${window.location.origin}/create#voterkey=${serialized}`;
       setVoterKey(serialized);
+      setVoterLink(link);
       setStatus(null);
-      navigator.clipboard.writeText(serialized).catch(() => {});
+      navigator.clipboard.writeText(link).catch(() => {});
     } catch (err) {
       setStatus(
         `Error: ${err instanceof Error ? err.message : "Signing rejected or failed."}`,
@@ -37,11 +41,18 @@ export default function OnboardPage() {
     }
   }
 
-  function copyKey() {
+  function copyLink() {
+    if (!voterLink) return;
+    navigator.clipboard.writeText(voterLink);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  }
+
+  function copyRawKey() {
     if (!voterKey) return;
     navigator.clipboard.writeText(voterKey);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedRaw(true);
+    setTimeout(() => setCopiedRaw(false), 2000);
   }
 
   return (
@@ -71,8 +82,8 @@ export default function OnboardPage() {
               <h2 className="text-lg font-semibold">Voter Key Generated</h2>
             </div>
             <p className="text-sm text-zinc-400">
-              Your voter key has been copied to the clipboard. Share it with the
-              election organizer.
+              Share this link with the election organizer. They can open it or
+              paste it to add you to an election.
             </p>
             <div className="space-y-2">
               <span className="text-sm text-zinc-500">Wallet Address</span>
@@ -81,18 +92,31 @@ export default function OnboardPage() {
               </p>
             </div>
             <div className="space-y-2">
-              <span className="text-sm text-zinc-500">Voter Key</span>
+              <span className="text-sm text-zinc-500">Shareable Link</span>
               <div className="break-all rounded-lg border border-zinc-700 bg-zinc-900 p-4 font-mono text-xs text-zinc-300">
+                {voterLink}
+              </div>
+              <button
+                type="button"
+                onClick={copyLink}
+                className="rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
+              >
+                {copiedLink ? "Copied!" : "Copy Link"}
+              </button>
+            </div>
+            <div className="space-y-2">
+              <span className="text-sm text-zinc-500">Raw Voter Key</span>
+              <div className="break-all rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 font-mono text-[11px] text-zinc-500">
                 {voterKey}
               </div>
+              <button
+                type="button"
+                onClick={copyRawKey}
+                className="rounded-full border border-zinc-700 px-5 py-2 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+              >
+                {copiedRaw ? "Copied!" : "Copy Raw Key"}
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={copyKey}
-              className="rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
-            >
-              {copied ? "Copied!" : "Copy Voter Key"}
-            </button>
           </div>
         ) : (
           <div className="rounded-xl border border-zinc-800 p-6 space-y-4">

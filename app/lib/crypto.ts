@@ -283,7 +283,12 @@ export function deserializeBallot(encoded: string): BallotData {
 }
 
 export function serializeVoter(voter: Voter): string {
-  const json = canonicalJson(voter);
+  const point = Point.fromAffine({
+    x: hexToBigint(voter.epk.x),
+    y: hexToBigint(voter.epk.y),
+  });
+  const compressedHex = bytesToHex(point.toBytes(true));
+  const json = canonicalJson({ a: voter.address, k: compressedHex });
   return btoa(
     Array.from(new TextEncoder().encode(json), (b) =>
       String.fromCharCode(b),
@@ -295,7 +300,12 @@ export function deserializeVoter(encoded: string): Voter {
   const binary = atob(encoded);
   const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
   const json = new TextDecoder().decode(bytes);
-  return JSON.parse(json) as Voter;
+  const parsed = JSON.parse(json);
+  if (parsed.a && parsed.k) {
+    const point = Point.fromHex(parsed.k);
+    return { address: parsed.a, epk: pointToJson(point) };
+  }
+  return parsed as Voter;
 }
 
 // ─── Hashing ────────────────────────────────────────────────────────

@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import {
   computeElectionId,
   deserializeVoter,
+  serializeVoter,
   type ElectionConfig,
   type Voter,
 } from "../lib/crypto";
-import { saveConfig } from "../lib/storage";
+import { saveConfig, getVoterKeys, saveVoterKeys, getAliases, setAlias, type AliasMap, getAddressBook, saveAllToAddressBook, type AddressBook } from "../lib/storage";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -35,18 +38,175 @@ export default function CreateElectionPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [candidates, setCandidates] = useState("");
-  const [votersInput, setVotersInput] = useState("");
+  const [voters, setVoters] = useState<Voter[]>([]);
+  const [votersLoaded, setVotersLoaded] = useState(false);
+  const [voterInput, setVoterInput] = useState("");
+  const [voterError, setVoterError] = useState("");
+  const [aliases, setAliases] = useState<AliasMap>({});
+  const [addressBook, setAddressBook] = useState<AddressBook>({});
+  const voterInputRef = useRef<HTMLInputElement>(null);
   const [votingMethod, setVotingMethod] = useState<
     "single" | "approval" | "ranked"
   >("single");
   const [rankedWeights, setRankedWeights] = useState("5,3,1");
   const [errors, setErrors] = useState<string[]>([]);
 
+  const DRAFT_KEY = "current";
+
+  // Load persisted voters and aliases from IndexedDB, then merge hash voter
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([getVoterKeys(DRAFT_KEY), getAliases(), getAddressBook()]).then(([stored, savedAliases, savedBook]) => {
+      if (cancelled) return;
+      setAliases(savedAliases);
+      setAddressBook(savedBook);
+
+      const loaded: Voter[] = [];
+      const seen = new Set<string>();
+      for (const s of stored) {
+        try {
+          const v = deserializeVoter(s);
+          if (!seen.has(v.address)) {
+            loaded.push(v);
+            seen.add(v.address);
+          }
+        } catch {
+          // skip invalid
+        }
+      }
+
+      // Also extract voter from URL hash if present
+      const hash = window.location.hash;
+      if (hash.startsWith("#voterkey=")) {
+        const voterKeyStr = decodeURIComponent(hash.slice("#voterkey=".length));
+        try {
+          const voter = deserializeVoter(voterKeyStr);
+          if (!seen.has(voter.address)) {
+            loaded.push(voter);
+          }
+        } catch {
+          // ignore invalid hash
+        }
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+
+      setVoters(loaded);
+      setVotersLoaded(true);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Persist voters to IndexedDB and global address book whenever they change
+  useEffect(() => {
+    if (!votersLoaded) return;
+    const serialized = voters.map((v) => serializeVoter(v));
+    saveVoterKeys(DRAFT_KEY, serialized);
+    saveAllToAddressBook(
+      voters.map((v, i) => ({ address: v.address, serializedKey: serialized[i] })),
+    );
+  }, [voters, votersLoaded]);
+
   const [result, setResult] = useState<{
     electionId: string;
     votingLink: string;
     configBase64: string;
   } | null>(null);
+
+  const tryAddVoter = (raw: string) => {
+    // Support pasting multiple keys/links at once (one per line)
+    const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+    if (lines.length === 0) return;
+    setVoterError("");
+
+    let added = 0;
+    let duplicates = 0;
+    let invalid = 0;
+
+    setVoters((prev) => {
+      const next = [...prev];
+      const seen = new Set(next.map((v) => v.address));
+      for (const line of lines) {
+        try {
+          let voterKeyStr = line;
+          const hashIdx = line.indexOf("#voterkey=");
+          if (hashIdx !== -1) {
+            voterKeyStr = line.slice(hashIdx + "#voterkey=".length);
+          }
+          const voter = deserializeVoter(voterKeyStr);
+          if (seen.has(voter.address)) {
+            duplicates++;
+            continue;
+          }
+          next.push(voter);
+          seen.add(voter.address);
+          added++;
+        } catch {
+          invalid++;
+        }
+      }
+      return next;
+    });
+
+    setVoterInput("");
+    if (invalid > 0 && added === 0 && duplicates === 0) {
+      setVoterError("Invalid voter key or link.");
+    } else if (invalid > 0) {
+      setVoterError(`Added ${added}, skipped ${duplicates} duplicate(s) and ${invalid} invalid.`);
+    } else if (duplicates > 0 && added === 0) {
+      setVoterError(lines.length === 1 ? "This voter has already been added." : `All ${duplicates} voter(s) already added.`);
+    }
+  };
+
+  const removeVoter = (address: string) => {
+    setVoters((prev) => prev.filter((v) => v.address !== address));
+  };
+
+  const addressBookEntries = Object.entries(addressBook).filter(
+    ([addr]) => !voters.some((v) => v.address.toLowerCase() === addr),
+  );
+
+  const addFromAddressBook = () => {
+    const newVoters: Voter[] = [];
+    const seen = new Set(voters.map((v) => v.address.toLowerCase()));
+    for (const [addr, serialized] of Object.entries(addressBook)) {
+      if (seen.has(addr)) continue;
+      try {
+        const voter = deserializeVoter(serialized);
+        newVoters.push(voter);
+        seen.add(addr);
+      } catch {
+        // skip invalid
+      }
+    }
+    if (newVoters.length > 0) {
+      setVoters((prev) => [...prev, ...newVoters]);
+    }
+  };
+
+  const updateAlias = (address: string, name: string) => {
+    const key = address.toLowerCase();
+    setAliases((prev) => {
+      const next = { ...prev };
+      if (name.trim()) {
+        next[key] = name.trim();
+      } else {
+        delete next[key];
+      }
+      return next;
+    });
+    setAlias(address, name);
+  };
+
+  const compressedEpkHex = (voter: Voter) => {
+    const point = secp256k1.Point.fromAffine({
+      x: BigInt(`0x${voter.epk.x}`),
+      y: BigInt(`0x${voter.epk.y}`),
+    });
+    return bytesToHex(point.toBytes(true));
+  };
+
+  const truncateAddress = (addr: string) =>
+    `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
   const validate = (): string[] => {
     const errs: string[] = [];
@@ -57,19 +217,7 @@ export default function CreateElectionPage() {
       .filter(Boolean);
     if (candidateList.length < 2)
       errs.push("At least 2 candidates are required.");
-    const voterLines = votersInput
-      .split("\n")
-      .map((v) => v.trim())
-      .filter(Boolean);
-    if (voterLines.length < 1)
-      errs.push("At least 1 voter is required.");
-    for (let i = 0; i < voterLines.length; i++) {
-      try {
-        deserializeVoter(voterLines[i]);
-      } catch {
-        errs.push(`Invalid voter key on line ${i + 1}`);
-      }
-    }
+    if (voters.length < 1) errs.push("At least 1 voter is required.");
     if (votingMethod === "ranked") {
       const weights = rankedWeights.split(",").map((w) => w.trim());
       if (weights.some((w) => !w || Number.isNaN(Number.parseInt(w, 10)))) {
@@ -79,7 +227,7 @@ export default function CreateElectionPage() {
     return errs;
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     const validationErrors = validate();
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
@@ -91,17 +239,12 @@ export default function CreateElectionPage() {
       .split("\n")
       .map((c) => c.trim())
       .filter(Boolean);
-    const parsedVoters: Voter[] = votersInput
-      .split("\n")
-      .map((v) => v.trim())
-      .filter(Boolean)
-      .map((v) => deserializeVoter(v));
 
     const config: ElectionConfig = {
       title: title.trim(),
       description: description.trim(),
       candidates: candidateList,
-      voters: parsedVoters,
+      voters,
       votingMethod,
       ...(votingMethod === "ranked"
         ? {
@@ -114,7 +257,7 @@ export default function CreateElectionPage() {
 
     const electionId = computeElectionId(config);
     const configBase64 = btoa(JSON.stringify(config));
-    saveConfig(electionId, configBase64);
+    await saveConfig(electionId, configBase64, config.title);
     const votingLink = `${window.location.origin}/election?config=${encodeURIComponent(configBase64)}`;
 
     setResult({
@@ -201,7 +344,7 @@ export default function CreateElectionPage() {
               Back to Home
             </Link>
             <Link
-              href="/aggregate"
+              href={`/aggregate?config=${encodeURIComponent(result.configBase64)}`}
               className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
             >
               Go to Aggregate
@@ -297,23 +440,107 @@ export default function CreateElectionPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="voters"
-              className="mb-2 block text-sm font-medium text-zinc-300"
-            >
-              Voter Keys <span className="text-red-400">*</span>
-            </label>
+            <div className="mb-2 flex items-center justify-between">
+              <label
+                htmlFor="voterInput"
+                className="text-sm font-medium text-zinc-300"
+              >
+                Voter Keys <span className="text-red-400">*</span>
+              </label>
+              {addressBookEntries.length > 0 && (
+                <button
+                  type="button"
+                  onClick={addFromAddressBook}
+                  className="rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+                >
+                  + Add known ({addressBookEntries.length})
+                </button>
+              )}
+            </div>
             <p className="mb-2 text-xs text-zinc-500">
-              Paste voter key strings (from the Onboard page), one per line.
+              Paste a voter key link or string (from the Onboard page).
             </p>
-            <textarea
-              id="voters"
-              value={votersInput}
-              onChange={(e) => setVotersInput(e.target.value)}
-              rows={4}
-              placeholder={"Paste voter key 1\nPaste voter key 2\n..."}
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 font-mono text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-600 focus:outline-none"
-            />
+            <div
+              className="flex w-full cursor-text items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 focus-within:border-zinc-600"
+              onClick={() => voterInputRef.current?.focus()}
+            >
+              <input
+                ref={voterInputRef}
+                id="voterInput"
+                type="text"
+                value={voterInput}
+                onChange={(e) => {
+                  setVoterInput(e.target.value);
+                  setVoterError("");
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const pasted = e.clipboardData.getData("text/plain");
+                  tryAddVoter(pasted);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    tryAddVoter(voterInput);
+                  }
+                }}
+                placeholder="Paste a voter key or link..."
+                className="min-w-0 flex-1 bg-transparent font-mono text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
+              />
+            </div>
+            {voterError && (
+              <p className="mt-1.5 text-xs text-red-400">{voterError}</p>
+            )}
+
+            {voters.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {voters.map((voter) => {
+                  const epkHex = compressedEpkHex(voter);
+                  const avatarColor = `#${voter.address.slice(2, 8)}`;
+                  const avatarLabel = voter.address.slice(2, 4).toUpperCase();
+                  const alias = aliases[voter.address.toLowerCase()] ?? "";
+                  return (
+                    <div
+                      key={voter.address}
+                      className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2"
+                      title={`Address: ${voter.address}\nPublic Key: ${epkHex}`}
+                    >
+                      <div
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                        style={{ backgroundColor: avatarColor }}
+                      >
+                        {avatarLabel}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="shrink-0 font-mono text-sm text-zinc-200">
+                            {truncateAddress(voter.address)}
+                          </p>
+                          <input
+                            type="text"
+                            value={alias}
+                            onChange={(e) => updateAlias(voter.address, e.target.value)}
+                            placeholder="add alias…"
+                            className="min-w-0 flex-1 bg-transparent text-sm text-zinc-100 placeholder:text-zinc-700 focus:outline-none"
+                          />
+                        </div>
+                        <p className="truncate font-mono text-xs text-zinc-500">
+                          epk: {epkHex.slice(0, 8)}…
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeVoter(voter.address)}
+                        className="shrink-0 text-zinc-500 transition-colors hover:text-red-400"
+                        aria-label={`Remove voter ${voter.address}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div>
