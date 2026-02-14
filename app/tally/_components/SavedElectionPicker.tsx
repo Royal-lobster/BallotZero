@@ -39,13 +39,13 @@ export function SavedElectionPicker({
                 </p>
               </div>
             </div>
-            <div className="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="absolute inset-0 z-0 bg-linear-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           </button>
         ))}
       </div>
       <div className="flex items-center gap-3 text-xs text-zinc-600">
         <span className="h-px flex-1 bg-zinc-800" />
-        or paste election data
+        or paste vote link
         <span className="h-px flex-1 bg-zinc-800" />
       </div>
     </div>
