@@ -1,6 +1,6 @@
 import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { truncateAddress } from "../../_components/utils";
 import type { Voter } from "../../lib/crypto";
 import type { AliasMap } from "../../lib/storage";
@@ -37,7 +37,15 @@ export function VoterList({
   onClearError,
 }: VoterListProps) {
   const [voterInput, setVoterInput] = useState("");
+  const [copied, setCopied] = useState(false);
   const voterInputRef = useRef<HTMLInputElement>(null);
+
+  const copyJoinLink = useCallback(async () => {
+    const link = `${window.location.origin}/join`;
+    await navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, []);
 
   return (
     <div>
@@ -48,15 +56,24 @@ export function VoterList({
         >
           Voters <span className="text-red-400">*</span>
         </label>
-        {addressBookEntries.length > 0 && (
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={onAddFromAddressBook}
+            onClick={copyJoinLink}
             className="rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
           >
-            + Add known ({addressBookEntries.length})
+            {copied ? "Copied!" : "Copy join link"}
           </button>
-        )}
+          {addressBookEntries.length > 0 && (
+            <button
+              type="button"
+              onClick={onAddFromAddressBook}
+              className="rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+            >
+              + Add known ({addressBookEntries.length})
+            </button>
+          )}
+        </div>
       </div>
       <p className="mb-2 text-xs text-zinc-500">
         Paste the link each voter shared with you after joining.
