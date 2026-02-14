@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="screenshot.png" width="600" alt="BallotZero Screenshot" />
+<img src="https://ballot-zero.vercel.app/apple-icon" width="80" alt="BallotZero Screenshot" />
 
 # Ballot Zero
 
@@ -12,6 +12,9 @@ A fully client-side voting system using a [Dining Cryptographers Network](https:
 [![Blog Post](https://img.shields.io/badge/Blog-Anonymous_Votes_with_Math-blue)](https://srujangurram.me/blog/anonymous-votes-with-math)
 
 </div>
+
+<img src="screenshot.png" width="600" alt="BallotZero Screenshot" />
+
 
 ---
 
