@@ -21,7 +21,7 @@ export default async function Image() {
 				position: "relative",
 			}}
 		>
-			{/* Radial glow behind the content */}
+			{/* Subtle radial glow */}
 			<div
 				style={{
 					position: "absolute",
@@ -31,7 +31,7 @@ export default async function Image() {
 					height: "900px",
 					borderRadius: "50%",
 					background:
-						"radial-gradient(circle, rgba(255,120,136,0.06) 0%, rgba(255,120,136,0.03) 40%, transparent 70%)",
+						"radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%)",
 					transform: "translateX(-50%)",
 					display: "flex",
 				}}
@@ -44,52 +44,55 @@ export default async function Image() {
 					top: 0,
 					left: 0,
 					right: 0,
-					height: "3px",
+					height: "2px",
 					display: "flex",
 					background:
-						"linear-gradient(90deg, transparent 10%, #FF7888 50%, transparent 90%)",
+						"linear-gradient(90deg, transparent 15%, rgba(255,255,255,0.2) 50%, transparent 85%)",
 				}}
 			/>
 
-			{/* Ballot box logo */}
+			{/* Slashed zero mark */}
 			<div
 				style={{
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
-					marginBottom: "24px",
+					marginBottom: "28px",
 				}}
 			>
+				{/* biome-ignore lint/a11y/noSvgWithoutTitle: generated image, not DOM */}
 				<svg
-					width="64"
-					height="83"
-					viewBox="0 0 40 52"
+					width="72"
+					height="72"
+					viewBox="0 0 64 64"
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg"
 				>
-					<title>BallotZero logo</title>
-					{/* Ballot box — the "0" */}
-					<rect
-						x="4"
-						y="18"
-						width="32"
-						height="30"
-						rx="11"
-						fill="rgba(255,120,136,0.08)"
-						stroke="rgba(255,120,136,0.4)"
-						strokeWidth="2"
+					{/* Right/bottom arc */}
+					<path
+						d="M47.3 18.4 A19 23 0 0 1 19.4 49.2"
+						stroke="#fafafa"
+						strokeWidth="4"
+						strokeLinecap="round"
+						fill="none"
 					/>
-					{/* Ballot paper dropping in */}
-					<rect
-						x="13"
-						y="2"
-						width="14"
-						height="20"
-						rx="2"
-						transform="rotate(-8 20 12)"
-						fill="#0a0a0a"
-						stroke="#FF7888"
-						strokeWidth="2"
+					{/* Left/top arc */}
+					<path
+						d="M16.7 45.6 A19 23 0 0 1 44.6 14.8"
+						stroke="#fafafa"
+						strokeWidth="4"
+						strokeLinecap="round"
+						fill="none"
+					/>
+					{/* Slash */}
+					<line
+						x1="13"
+						y1="53"
+						x2="51"
+						y2="11"
+						stroke="#fafafa"
+						strokeWidth="4"
+						strokeLinecap="round"
 					/>
 				</svg>
 			</div>
@@ -99,7 +102,6 @@ export default async function Image() {
 				style={{
 					display: "flex",
 					alignItems: "baseline",
-					gap: "4px",
 					letterSpacing: "-2px",
 				}}
 			>
@@ -111,17 +113,7 @@ export default async function Image() {
 						lineHeight: 1,
 					}}
 				>
-					Ballot
-				</span>
-				<span
-					style={{
-						fontSize: "72px",
-						fontWeight: 700,
-						color: "#FF7888",
-						lineHeight: 1,
-					}}
-				>
-					Zero
+					BallotZero
 				</span>
 			</div>
 
@@ -130,7 +122,7 @@ export default async function Image() {
 				style={{
 					display: "flex",
 					fontSize: "22px",
-					color: "#71717a",
+					color: "#52525b",
 					marginTop: "16px",
 					letterSpacing: "0.5px",
 				}}
@@ -153,20 +145,10 @@ export default async function Image() {
 						gap: "8px",
 						padding: "8px 20px",
 						borderRadius: "999px",
-						border: "1px solid rgba(255,255,255,0.12)",
-						background: "rgba(255,255,255,0.04)",
+						border: "1px solid rgba(255,255,255,0.1)",
 					}}
 				>
-					<div
-						style={{
-							width: "8px",
-							height: "8px",
-							borderRadius: "50%",
-							background: "#FF7888",
-							display: "flex",
-						}}
-					/>
-					<span style={{ fontSize: "15px", color: "#a1a1aa" }}>
+					<span style={{ fontSize: "15px", color: "#71717a" }}>
 						Private Ballots
 					</span>
 				</div>
@@ -177,20 +159,10 @@ export default async function Image() {
 						gap: "8px",
 						padding: "8px 20px",
 						borderRadius: "999px",
-						border: "1px solid rgba(255,255,255,0.12)",
-						background: "rgba(255,255,255,0.04)",
+						border: "1px solid rgba(255,255,255,0.1)",
 					}}
 				>
-					<div
-						style={{
-							width: "8px",
-							height: "8px",
-							borderRadius: "50%",
-							background: "#FF7888",
-							display: "flex",
-						}}
-					/>
-					<span style={{ fontSize: "15px", color: "#a1a1aa" }}>Verifiable</span>
+					<span style={{ fontSize: "15px", color: "#71717a" }}>Verifiable</span>
 				</div>
 				<div
 					style={{
@@ -199,20 +171,10 @@ export default async function Image() {
 						gap: "8px",
 						padding: "8px 20px",
 						borderRadius: "999px",
-						border: "1px solid rgba(255,255,255,0.12)",
-						background: "rgba(255,255,255,0.04)",
+						border: "1px solid rgba(255,255,255,0.1)",
 					}}
 				>
-					<div
-						style={{
-							width: "8px",
-							height: "8px",
-							borderRadius: "50%",
-							background: "#FF7888",
-							display: "flex",
-						}}
-					/>
-					<span style={{ fontSize: "15px", color: "#a1a1aa" }}>Trustless</span>
+					<span style={{ fontSize: "15px", color: "#71717a" }}>Trustless</span>
 				</div>
 			</div>
 
@@ -223,10 +185,10 @@ export default async function Image() {
 					bottom: 0,
 					left: 0,
 					right: 0,
-					height: "3px",
+					height: "2px",
 					display: "flex",
 					background:
-						"linear-gradient(90deg, transparent 10%, #FF7888 50%, transparent 90%)",
+						"linear-gradient(90deg, transparent 15%, rgba(255,255,255,0.2) 50%, transparent 85%)",
 				}}
 			/>
 		</div>,

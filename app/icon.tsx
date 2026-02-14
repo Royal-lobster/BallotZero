@@ -19,36 +19,39 @@ export default function Icon() {
 				borderRadius: "6px",
 			}}
 		>
+			{/* biome-ignore lint/a11y/noSvgWithoutTitle: generated image, not DOM */}
 			<svg
 				width="24"
 				height="24"
-				viewBox="0 0 40 52"
+				viewBox="0 0 64 64"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
 			>
-				<title>BallotZero</title>
-				{/* Ballot box — the "0" */}
-				<rect
-					x="4"
-					y="18"
-					width="32"
-					height="30"
-					rx="11"
-					fill="rgba(255,120,136,0.15)"
-					stroke="#FF7888"
-					strokeWidth="3"
+				{/* Right/bottom arc */}
+				<path
+					d="M47.3 18.4 A19 23 0 0 1 19.4 49.2"
+					stroke="#fafafa"
+					strokeWidth="5.5"
+					strokeLinecap="round"
+					fill="none"
 				/>
-				{/* Ballot paper dropping in */}
-				<rect
-					x="13"
-					y="2"
-					width="14"
-					height="20"
-					rx="2"
-					transform="rotate(-8 20 12)"
-					fill="#0a0a0a"
-					stroke="#FF7888"
-					strokeWidth="2.5"
+				{/* Left/top arc */}
+				<path
+					d="M16.7 45.6 A19 23 0 0 1 44.6 14.8"
+					stroke="#fafafa"
+					strokeWidth="5.5"
+					strokeLinecap="round"
+					fill="none"
+				/>
+				{/* Slash */}
+				<line
+					x1="13"
+					y1="53"
+					x2="51"
+					y2="11"
+					stroke="#fafafa"
+					strokeWidth="5.5"
+					strokeLinecap="round"
 				/>
 			</svg>
 		</div>,
