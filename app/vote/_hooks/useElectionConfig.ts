@@ -1,5 +1,6 @@
 import type { ReadonlyURLSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { decompressFromUrl } from "../../lib/compression";
 import { computeElectionId, type ElectionConfig } from "../../lib/crypto";
 
 export function useElectionConfig(searchParams: ReadonlyURLSearchParams) {
@@ -13,7 +14,7 @@ export function useElectionConfig(searchParams: ReadonlyURLSearchParams) {
       return;
     }
     try {
-      const decoded = JSON.parse(atob(raw));
+      const decoded = JSON.parse(decompressFromUrl(raw));
       setConfig(decoded);
     } catch {
       setParseError("Invalid election configuration.");

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { compressForUrl, decompressFromUrl } from "../../lib/compression";
 import {
   type AggregatedResult,
   aggregateMaskedVotes,
@@ -29,10 +30,9 @@ export function useAggregation() {
 
     try {
       setStatus("Decoding election config...");
-      const configJson = new TextDecoder().decode(
-        Uint8Array.from(atob(configBase64), (c) => c.charCodeAt(0)),
+      const electionConfig: ElectionConfig = JSON.parse(
+        decompressFromUrl(configBase64),
       );
-      const electionConfig: ElectionConfig = JSON.parse(configJson);
 
       if (!electionConfig.voters || electionConfig.voters.length === 0) {
         setStatus("Error: Config must include voters with their public keys.");
@@ -123,14 +123,9 @@ export function useAggregation() {
         aggregation_hash: aggHash,
       };
 
-      const resultJson = canonicalJson(result);
-      const resultBase64 = btoa(
-        Array.from(new TextEncoder().encode(resultJson), (b) =>
-          String.fromCharCode(b),
-        ).join(""),
-      );
+      const resultEncoded = compressForUrl(canonicalJson(result));
 
-      const link = `/results?data=${encodeURIComponent(resultBase64)}&config=${encodeURIComponent(configBase64)}`;
+      const link = `/results?data=${resultEncoded}&config=${configBase64}`;
 
       setResultsLink(link);
       setValidCount(validBallots.length);

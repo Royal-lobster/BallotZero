@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { compressForUrl } from "../../lib/compression";
 import {
   computeElectionId,
   type ElectionConfig,
@@ -87,16 +88,16 @@ export function useElectionForm() {
     };
 
     const electionId = computeElectionId(config);
-    const configBase64 = btoa(JSON.stringify(config));
+    const configEncoded = compressForUrl(JSON.stringify(config));
     await saveConfig(
       electionId,
-      configBase64,
+      configEncoded,
       config.title,
       values.emoji || undefined,
     );
-    const votingLink = `${window.location.origin}/vote?config=${encodeURIComponent(configBase64)}`;
+    const votingLink = `${window.location.origin}/vote?config=${configEncoded}`;
 
-    return { electionId, votingLink, configBase64 };
+    return { electionId, votingLink, configBase64: configEncoded };
   };
 
   return { form, handleCreate };

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { decompressFromUrl } from "../lib/compression";
 import {
   type AggregatedResult,
   computeElectionId,
@@ -43,15 +44,8 @@ function ResultsContent() {
   let result: AggregatedResult;
   let config: ElectionConfig;
   try {
-    const resultJson = new TextDecoder().decode(
-      Uint8Array.from(atob(dataParam), (c) => c.charCodeAt(0)),
-    );
-    result = JSON.parse(resultJson) as AggregatedResult;
-
-    const configJson = new TextDecoder().decode(
-      Uint8Array.from(atob(configParam), (c) => c.charCodeAt(0)),
-    );
-    config = JSON.parse(configJson) as ElectionConfig;
+    result = JSON.parse(decompressFromUrl(dataParam)) as AggregatedResult;
+    config = JSON.parse(decompressFromUrl(configParam)) as ElectionConfig;
   } catch {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6">

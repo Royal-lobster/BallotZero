@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { decompressFromUrl } from "../lib/compression";
 import { computeElectionId, type ElectionConfig } from "../lib/crypto";
 import {
   type AliasMap,
@@ -39,10 +40,7 @@ function AggregateContent() {
     electionId: string;
   } | null>(() => {
     try {
-      const json = new TextDecoder().decode(
-        Uint8Array.from(atob(configBase64), (c) => c.charCodeAt(0)),
-      );
-      const cfg: ElectionConfig = JSON.parse(json);
+      const cfg: ElectionConfig = JSON.parse(decompressFromUrl(configBase64));
       if (cfg.title && cfg.voters?.length) {
         const eid = computeElectionId(cfg);
         return { config: cfg, electionId: eid };
@@ -62,7 +60,7 @@ function AggregateContent() {
   }
 
   function copyElectionLink() {
-    const link = `${window.location.origin}/vote?config=${encodeURIComponent(configBase64)}`;
+    const link = `${window.location.origin}/vote?config=${configBase64}`;
     navigator.clipboard.writeText(link);
     setCopiedElectionLink(true);
     setTimeout(() => setCopiedElectionLink(false), 2000);

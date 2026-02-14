@@ -3,6 +3,7 @@
 import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
+import { compressForUrl, decompressFromUrl } from "./compression";
 
 const Point = secp256k1.Point;
 const G = Point.BASE;
@@ -287,19 +288,11 @@ export function aggregateMaskedVotes(
 // ─── Serialization ──────────────────────────────────────────────────
 
 export function serializeBallot(ballot: BallotData): string {
-  const json = canonicalJson(ballot);
-  return btoa(
-    Array.from(new TextEncoder().encode(json), (b) =>
-      String.fromCharCode(b),
-    ).join(""),
-  );
+  return compressForUrl(canonicalJson(ballot));
 }
 
 export function deserializeBallot(encoded: string): BallotData {
-  const binary = atob(encoded);
-  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-  const json = new TextDecoder().decode(bytes);
-  return JSON.parse(json) as BallotData;
+  return JSON.parse(decompressFromUrl(encoded)) as BallotData;
 }
 
 export function serializeVoter(voter: Voter): string {
@@ -308,19 +301,19 @@ export function serializeVoter(voter: Voter): string {
     y: hexToBigint(voter.epk.y),
   });
   const compressedHex = bytesToHex(point.toBytes(true));
-  const json = canonicalJson({ a: voter.address, k: compressedHex });
-  return btoa(
-    Array.from(new TextEncoder().encode(json), (b) =>
-      String.fromCharCode(b),
-    ).join(""),
+  return compressForUrl(
+    canonicalJson({ address: voter.address, key: compressedHex }),
   );
 }
 
 export function deserializeVoter(encoded: string): Voter {
-  const binary = atob(encoded);
-  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-  const json = new TextDecoder().decode(bytes);
-  const parsed = JSON.parse(json);
+  const parsed = JSON.parse(decompressFromUrl(encoded));
+  // New format: full key names (address, key)
+  if (parsed.address && parsed.key) {
+    const point = Point.fromHex(parsed.key);
+    return { address: parsed.address, epk: pointToJson(point) };
+  }
+  // Legacy format: abbreviated keys (a, k)
   if (parsed.a && parsed.k) {
     const point = Point.fromHex(parsed.k);
     return { address: parsed.a, epk: pointToJson(point) };
@@ -331,9 +324,8 @@ export function deserializeVoter(encoded: string): Voter {
 // ─── Hashing ────────────────────────────────────────────────────────
 
 export function computeAggregationHash(ballots: BallotData[]): string {
-  const serialized = ballots.map((b) => serializeBallot(b));
-  const hashed = serialized.map((s) => {
-    const h = sha256(new TextEncoder().encode(s));
+  const hashed = ballots.map((b) => {
+    const h = sha256(new TextEncoder().encode(canonicalJson(b)));
     return bytesToHex(h);
   });
   const sorted = [...hashed].sort();
