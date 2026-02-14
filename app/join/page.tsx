@@ -44,6 +44,7 @@ export default function OnboardPage() {
           <ConnectKitButton.Custom>
             {({ isConnected, show, truncatedAddress, ensName }) => (
               <button
+                type="button"
                 onClick={show}
                 className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-zinc-800 to-zinc-700 px-6 py-4 text-base font-semibold transition-all hover:from-zinc-700 hover:to-zinc-600 hover:shadow-lg hover:shadow-zinc-900/50"
               >
@@ -53,6 +54,7 @@ export default function OnboardPage() {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -102,6 +104,7 @@ export default function OnboardPage() {
                         className="h-4 w-4 animate-spin"
                         fill="none"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <circle
                           className="opacity-25"
@@ -135,6 +138,7 @@ export default function OnboardPage() {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"

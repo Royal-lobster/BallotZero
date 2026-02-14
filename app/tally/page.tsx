@@ -159,9 +159,11 @@ function AggregateContent() {
             <p className="mb-2 text-xs text-zinc-500">
               Paste ballot links or strings from voters.
             </p>
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: wrapper div delegates focus to inner input */}
             <div
               className="flex w-full cursor-text items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 focus-within:border-zinc-600"
               onClick={() => ballotState.ballotInputRef.current?.focus()}
+              onKeyDown={() => ballotState.ballotInputRef.current?.focus()}
             >
               <input
                 ref={ballotState.ballotInputRef}
@@ -226,7 +228,7 @@ function AggregateContent() {
           </button>
         </div>
 
-        {aggregation.status && aggregation.status.startsWith("Error") && (
+        {aggregation.status?.startsWith("Error") && (
           <div className="mt-6 rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3">
             <p className="text-sm text-red-400">{aggregation.status}</p>
           </div>

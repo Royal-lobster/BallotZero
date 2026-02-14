@@ -14,8 +14,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BallotZero",
-  description: "Trustless, verifiable elections with homomorphic encryption",
+  title: {
+    default: "BallotZero",
+    template: "%s | BallotZero",
+  },
+  description:
+    "Run elections and polls where every vote is private and every result is provably fair. Trustless, verifiable elections with homomorphic encryption.",
+  metadataBase: new URL("https://ballotzero.vercel.app"),
+  openGraph: {
+    title: "BallotZero",
+    description:
+      "Trustless, verifiable elections with homomorphic encryption. No one — not even the organizer — can see how you voted.",
+    siteName: "BallotZero",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BallotZero",
+    description:
+      "Trustless, verifiable elections with homomorphic encryption. No one — not even the organizer — can see how you voted.",
+  },
+  keywords: [
+    "voting",
+    "election",
+    "privacy",
+    "homomorphic encryption",
+    "verifiable",
+    "trustless",
+    "anonymous voting",
+    "cryptographic voting",
+  ],
 };
 
 export default function RootLayout({

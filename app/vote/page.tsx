@@ -1,11 +1,11 @@
 "use client";
 
 import { ConnectKitButton } from "connectkit";
-import Link from "next/link";
+
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
-import type { ElectionConfig } from "../lib/crypto";
+
 import { ApprovalVoting } from "./_components/ApprovalVoting";
 import { BallotCast } from "./_components/BallotCast";
 import { ElectionDetails } from "./_components/ElectionDetails";

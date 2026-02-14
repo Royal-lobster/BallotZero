@@ -22,9 +22,9 @@ export function TallyResult({ resultsLink, validCount }: TallyResultProps) {
         </div>
 
         <div className="rounded-xl border border-zinc-800 p-6">
-          <label className="mb-3 block text-sm font-semibold text-zinc-400">
+          <p className="mb-3 text-sm font-semibold text-zinc-400">
             Results Link
-          </label>
+          </p>
           <div className="flex items-center gap-3">
             <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
               {fullResultsUrl}
