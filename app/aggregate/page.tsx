@@ -26,10 +26,6 @@ function truncateAddress(addr: string): string {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
-function displayName(addr: string, aliases: AliasMap): string {
-  return aliases[addr.toLowerCase()] || truncateAddress(addr);
-}
-
 function AddressAvatar({
   address,
   size = "sm",
@@ -64,11 +60,6 @@ function AggregateContent() {
   const [status, setStatus] = useState("");
   const [resultsLink, setResultsLink] = useState("");
   const [validCount, setValidCount] = useState(0);
-  const [includedVoters, setIncludedVoters] = useState<string[]>([]);
-  const [rejected, setRejected] = useState<RejectedBallot[]>([]);
-  const [postMissingVoters, setPostMissingVoters] = useState<string[]>([]);
-  const [tally, setTally] = useState<number[] | null>(null);
-  const [config, setConfig] = useState<ElectionConfig | null>(null);
   const [copied, setCopied] = useState(false);
   const [ballotsLoaded, setBallotsLoaded] = useState(false);
   const [copiedElectionLink, setCopiedElectionLink] = useState(false);
@@ -245,11 +236,6 @@ function AggregateContent() {
     setStatus("");
     setResultsLink("");
     setValidCount(0);
-    setIncludedVoters([]);
-    setRejected([]);
-    setPostMissingVoters([]);
-    setTally(null);
-    setConfig(null);
 
     try {
       setStatus("Decoding election config...");
@@ -326,17 +312,9 @@ function AggregateContent() {
 
       if (validBallots.length === 0) {
         setStatus("Error: No valid ballots after validation.");
-        setRejected(rejectedBallots);
         setProcessing(false);
         return;
       }
-
-      const registeredAddresses = electionConfig.voters.map((v) =>
-        v.address.toLowerCase(),
-      );
-      const missing = registeredAddresses.filter(
-        (addr) => !seenAddresses.has(addr),
-      );
 
       setStatus(
         `Validated ${validBallots.length} ballots. Aggregating masked votes...`,
@@ -366,12 +344,6 @@ function AggregateContent() {
 
       setResultsLink(link);
       setValidCount(validBallots.length);
-      setIncludedVoters(validBallots.map((b) => b.voter_address));
-      setRejected(rejectedBallots);
-      setPostMissingVoters(missing);
-      setTally(tallyResult);
-      setConfig(electionConfig);
-      setStatus("Aggregation complete!");
     } catch (err) {
       setStatus(`Error: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
