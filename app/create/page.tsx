@@ -1,18 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import dynamic from "next/dynamic";
 import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
+import { Theme as EmojiTheme } from "emoji-picker-react";
+import { ChevronDown, ChevronUp, Shuffle, X } from "lucide-react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import {
   computeElectionId,
   deserializeVoter,
-  serializeVoter,
   type ElectionConfig,
+  serializeVoter,
   type Voter,
 } from "../lib/crypto";
-import { saveConfig, getVoterKeys, saveVoterKeys, getAliases, setAlias, type AliasMap, getAddressBook, saveAllToAddressBook, type AddressBook } from "../lib/storage";
+import {
+  type AddressBook,
+  type AliasMap,
+  getAddressBook,
+  getAliases,
+  getVoterKeys,
+  saveAllToAddressBook,
+  saveConfig,
+  saveVoterKeys,
+  setAlias,
+} from "../lib/storage";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -64,57 +76,67 @@ export default function CreateElectionPage() {
   // Close emoji picker when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
         setShowEmojiPicker(false);
       }
     }
     if (showEmojiPicker) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showEmojiPicker]);
 
   // Load persisted voters and aliases from IndexedDB, then merge hash voter
   useEffect(() => {
     let cancelled = false;
-    Promise.all([getVoterKeys(DRAFT_KEY), getAliases(), getAddressBook()]).then(([stored, savedAliases, savedBook]) => {
-      if (cancelled) return;
-      setAliases(savedAliases);
-      setAddressBook(savedBook);
+    Promise.all([getVoterKeys(DRAFT_KEY), getAliases(), getAddressBook()]).then(
+      ([stored, savedAliases, savedBook]) => {
+        if (cancelled) return;
+        setAliases(savedAliases);
+        setAddressBook(savedBook);
 
-      const loaded: Voter[] = [];
-      const seen = new Set<string>();
-      for (const s of stored) {
-        try {
-          const v = deserializeVoter(s);
-          if (!seen.has(v.address)) {
-            loaded.push(v);
-            seen.add(v.address);
+        const loaded: Voter[] = [];
+        const seen = new Set<string>();
+        for (const s of stored) {
+          try {
+            const v = deserializeVoter(s);
+            if (!seen.has(v.address)) {
+              loaded.push(v);
+              seen.add(v.address);
+            }
+          } catch {
+            // skip invalid
           }
-        } catch {
-          // skip invalid
         }
-      }
 
-      // Also extract voter from URL hash if present
-      const hash = window.location.hash;
-      if (hash.startsWith("#voterkey=")) {
-        const voterKeyStr = decodeURIComponent(hash.slice("#voterkey=".length));
-        try {
-          const voter = deserializeVoter(voterKeyStr);
-          if (!seen.has(voter.address)) {
-            loaded.push(voter);
+        // Also extract voter from URL hash if present
+        const hash = window.location.hash;
+        if (hash.startsWith("#voterkey=")) {
+          const voterKeyStr = decodeURIComponent(
+            hash.slice("#voterkey=".length),
+          );
+          try {
+            const voter = deserializeVoter(voterKeyStr);
+            if (!seen.has(voter.address)) {
+              loaded.push(voter);
+            }
+          } catch {
+            // ignore invalid hash
           }
-        } catch {
-          // ignore invalid hash
+          window.history.replaceState(null, "", window.location.pathname);
         }
-        window.history.replaceState(null, "", window.location.pathname);
-      }
 
-      setVoters(loaded);
-      setVotersLoaded(true);
-    });
-    return () => { cancelled = true; };
+        setVoters(loaded);
+        setVotersLoaded(true);
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Persist voters to IndexedDB and global address book whenever they change
@@ -123,7 +145,10 @@ export default function CreateElectionPage() {
     const serialized = voters.map((v) => serializeVoter(v));
     saveVoterKeys(DRAFT_KEY, serialized);
     saveAllToAddressBook(
-      voters.map((v, i) => ({ address: v.address, serializedKey: serialized[i] })),
+      voters.map((v, i) => ({
+        address: v.address,
+        serializedKey: serialized[i],
+      })),
     );
   }, [voters, votersLoaded]);
 
@@ -135,7 +160,10 @@ export default function CreateElectionPage() {
 
   const tryAddVoter = (raw: string) => {
     // Support pasting multiple keys/links at once (one per line)
-    const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+    const lines = raw
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     if (lines.length === 0) return;
     setVoterError("");
 
@@ -172,9 +200,15 @@ export default function CreateElectionPage() {
     if (invalid > 0 && added === 0 && duplicates === 0) {
       setVoterError("Invalid voter key or link.");
     } else if (invalid > 0) {
-      setVoterError(`Added ${added}, skipped ${duplicates} duplicate(s) and ${invalid} invalid.`);
+      setVoterError(
+        `Added ${added}, skipped ${duplicates} duplicate(s) and ${invalid} invalid.`,
+      );
     } else if (duplicates > 0 && added === 0) {
-      setVoterError(lines.length === 1 ? "This voter has already been added." : `All ${duplicates} voter(s) already added.`);
+      setVoterError(
+        lines.length === 1
+          ? "This voter has already been added."
+          : `All ${duplicates} voter(s) already added.`,
+      );
     }
   };
 
@@ -230,7 +264,10 @@ export default function CreateElectionPage() {
     `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
   const addCandidates = (raw: string) => {
-    const names = raw.split("\n").map((c) => c.trim()).filter(Boolean);
+    const names = raw
+      .split("\n")
+      .map((c) => c.trim())
+      .filter(Boolean);
     if (names.length === 0) return;
     setCandidateList((prev) => [...prev, ...names]);
     setCandidateInput("");
@@ -265,8 +302,7 @@ export default function CreateElectionPage() {
     const errs: string[] = [];
     if (!title.trim()) errs.push("Title is required.");
     const filtered = candidateList.filter((c) => c.trim());
-    if (filtered.length < 2)
-      errs.push("At least 2 candidates are required.");
+    if (filtered.length < 2) errs.push("At least 2 candidates are required.");
     if (voters.length < 1) errs.push("At least 1 voter is required.");
     if (votingMethod === "ranked") {
       const weights = rankedWeights.split(",").map((w) => w.trim());
@@ -311,7 +347,12 @@ export default function CreateElectionPage() {
 
     const electionId = computeElectionId(config);
     const configBase64 = btoa(JSON.stringify(config));
-    await saveConfig(electionId, configBase64, config.title, emoji || undefined);
+    await saveConfig(
+      electionId,
+      configBase64,
+      config.title,
+      emoji || undefined,
+    );
     const votingLink = `${window.location.origin}/election?config=${encodeURIComponent(configBase64)}`;
 
     setResult({
@@ -326,7 +367,7 @@ export default function CreateElectionPage() {
       <div className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <div className="mb-4 text-4xl">{emoji || '✅'}</div>
+            <div className="mb-4 text-4xl">{emoji || "✅"}</div>
             <h1 className="text-3xl font-bold tracking-tight">
               Election Created
             </h1>
@@ -336,9 +377,9 @@ export default function CreateElectionPage() {
           </div>
 
           <div className="rounded-xl border border-zinc-800 p-6">
-            <label className="mb-3 block text-sm font-semibold text-zinc-400">
+            <p className="mb-3 text-sm font-semibold text-zinc-400">
               Voting Link
-            </label>
+            </p>
             <div className="flex items-center gap-3">
               <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
                 {result.votingLink}
@@ -346,8 +387,8 @@ export default function CreateElectionPage() {
               <CopyButton text={result.votingLink} />
             </div>
             <p className="mt-3 text-xs text-zinc-500">
-              Each voter will connect their wallet and cast their vote. Once
-              all ballots are collected, aggregate them to produce the tally.
+              Each voter will connect their wallet and cast their vote. Once all
+              ballots are collected, aggregate them to produce the tally.
             </p>
           </div>
 
@@ -366,7 +407,10 @@ export default function CreateElectionPage() {
             </Link>
           </div>
 
-          <p className="text-center font-mono text-xs text-zinc-600" title={result.electionId}>
+          <p
+            className="text-center font-mono text-xs text-zinc-600"
+            title={result.electionId}
+          >
             ID: {result.electionId.slice(0, 16)}…
           </p>
         </div>
@@ -384,12 +428,10 @@ export default function CreateElectionPage() {
           >
             ← Back
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Create Election
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Create Election</h1>
           <p className="mt-2 text-zinc-400">
-            Define your election parameters. No keys are generated — voters
-            will register their own keys.
+            Define your election parameters. No keys are generated — voters will
+            register their own keys.
           </p>
         </div>
 
@@ -435,7 +477,7 @@ export default function CreateElectionPage() {
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 className="relative h-[46px] w-full rounded-lg border border-zinc-800 bg-zinc-900 text-2xl transition-colors hover:border-zinc-600 focus:border-zinc-600 focus:outline-none"
               >
-                {emoji || '📊'}
+                {emoji || "📊"}
               </button>
               {showEmojiPicker && (
                 <div className="absolute right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-zinc-800 shadow-2xl">
@@ -444,7 +486,7 @@ export default function CreateElectionPage() {
                       setEmoji(emojiData.emoji);
                       setShowEmojiPicker(false);
                     }}
-                    theme="dark"
+                    theme={EmojiTheme.DARK}
                     width={350}
                     height={450}
                   />
@@ -471,14 +513,19 @@ export default function CreateElectionPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-zinc-300">
+            <label
+              htmlFor="candidateInput"
+              className="mb-2 block text-sm font-medium text-zinc-300"
+            >
               Candidates <span className="text-red-400">*</span>
             </label>
             <p className="mb-2 text-xs text-zinc-500">
-              Add candidates one at a time or paste multiple names (one per line). Minimum 2.
+              Add candidates one at a time or paste multiple names (one per
+              line). Minimum 2.
             </p>
             <div className="flex gap-2">
               <input
+                id="candidateInput"
                 type="text"
                 value={candidateInput}
                 onChange={(e) => setCandidateInput(e.target.value)}
@@ -514,13 +561,16 @@ export default function CreateElectionPage() {
             {candidateList.length > 0 && (
               <div className="mt-3 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-zinc-500">{candidateList.length} candidate{candidateList.length !== 1 ? "s" : ""}</span>
+                  <span className="text-xs text-zinc-500">
+                    {candidateList.length} candidate
+                    {candidateList.length !== 1 ? "s" : ""}
+                  </span>
                   <button
                     type="button"
                     onClick={shuffleCandidates}
                     className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                    <Shuffle size={12} />
                     Shuffle
                   </button>
                 </div>
@@ -552,7 +602,7 @@ export default function CreateElectionPage() {
                         className="rounded p-1 text-zinc-500 transition-colors hover:text-zinc-200 disabled:opacity-30 disabled:hover:text-zinc-500"
                         aria-label="Move up"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                        <ChevronUp size={14} />
                       </button>
                       <button
                         type="button"
@@ -561,7 +611,7 @@ export default function CreateElectionPage() {
                         className="rounded p-1 text-zinc-500 transition-colors hover:text-zinc-200 disabled:opacity-30 disabled:hover:text-zinc-500"
                         aria-label="Move down"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        <ChevronDown size={14} />
                       </button>
                       <button
                         type="button"
@@ -569,7 +619,7 @@ export default function CreateElectionPage() {
                         className="rounded p-1 text-zinc-500 transition-colors hover:text-red-400"
                         aria-label={`Remove ${name}`}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <X size={14} />
                       </button>
                     </div>
                   </div>
@@ -599,10 +649,7 @@ export default function CreateElectionPage() {
             <p className="mb-2 text-xs text-zinc-500">
               Paste a voter key link or string (from the Onboard page).
             </p>
-            <div
-              className="flex w-full cursor-text items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 focus-within:border-zinc-600"
-              onClick={() => voterInputRef.current?.focus()}
-            >
+            <div className="flex w-full items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 focus-within:border-zinc-600">
               <input
                 ref={voterInputRef}
                 id="voterInput"
@@ -658,7 +705,9 @@ export default function CreateElectionPage() {
                           <input
                             type="text"
                             value={alias}
-                            onChange={(e) => updateAlias(voter.address, e.target.value)}
+                            onChange={(e) =>
+                              updateAlias(voter.address, e.target.value)
+                            }
                             placeholder="add alias…"
                             className="min-w-0 flex-1 bg-transparent text-sm text-zinc-100 placeholder:text-zinc-700 focus:outline-none"
                           />
@@ -683,11 +732,11 @@ export default function CreateElectionPage() {
           </div>
 
           <div>
-            <label className="mb-3 block text-sm font-medium text-zinc-300">
+            <p className="mb-3 text-sm font-medium text-zinc-300">
               Voting Method
-            </label>
+            </p>
             <div className="grid grid-cols-2 gap-3">
-              {([
+              {[
                 {
                   value: "single" as const,
                   label: "Single Choice",
@@ -712,7 +761,7 @@ export default function CreateElectionPage() {
                   icon: "\u2605",
                   desc: "Voters rate each candidate on a scale (e.g. 0\u20135). Highest average score wins.",
                 },
-              ]).map((method) => (
+              ].map((method) => (
                 <button
                   key={method.value}
                   type="button"
@@ -724,16 +773,22 @@ export default function CreateElectionPage() {
                   }`}
                 >
                   <div className="flex w-full items-center gap-2.5">
-                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${
-                      votingMethod === method.value
-                        ? "bg-white text-black"
-                        : "bg-zinc-800 text-zinc-400"
-                    }`}>
+                    <span
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${
+                        votingMethod === method.value
+                          ? "bg-white text-black"
+                          : "bg-zinc-800 text-zinc-400"
+                      }`}
+                    >
                       {method.icon}
                     </span>
-                    <span className={`text-sm font-semibold ${
-                      votingMethod === method.value ? "text-white" : "text-zinc-300"
-                    }`}>
+                    <span
+                      className={`text-sm font-semibold ${
+                        votingMethod === method.value
+                          ? "text-white"
+                          : "text-zinc-300"
+                      }`}
+                    >
                       {method.label}
                     </span>
                   </div>
@@ -754,8 +809,8 @@ export default function CreateElectionPage() {
                 Ranked Weights
               </label>
               <p className="mb-2 text-xs text-zinc-500">
-                Comma-separated point values for each rank position (e.g.
-                1st, 2nd, 3rd place).
+                Comma-separated point values for each rank position (e.g. 1st,
+                2nd, 3rd place).
               </p>
               <input
                 id="rankedWeights"
@@ -777,7 +832,8 @@ export default function CreateElectionPage() {
                 Maximum Score
               </label>
               <p className="mb-2 text-xs text-zinc-500">
-                The highest score a voter can give a candidate (e.g. 5 means the scale is 0&ndash;5).
+                The highest score a voter can give a candidate (e.g. 5 means the
+                scale is 0&ndash;5).
               </p>
               <input
                 id="scoreMax"

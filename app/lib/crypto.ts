@@ -162,8 +162,14 @@ export function registrationMessage(): string {
  * The deterministic message each voter signs when casting their vote.
  * This is different from the registration message to avoid signature reuse.
  */
-export function ballotSignMessage(electionId: string, maskedVote: string[]): string {
-  const payload = canonicalJson({ election_id: electionId, masked_vote: maskedVote });
+export function ballotSignMessage(
+  electionId: string,
+  maskedVote: string[],
+): string {
+  const payload = canonicalJson({
+    election_id: electionId,
+    masked_vote: maskedVote,
+  });
   const hash = sha256(new TextEncoder().encode(payload));
   return bytesToHex(hash);
 }
@@ -200,11 +206,11 @@ function deriveMaskComponent(
 
 /**
  * Compute the full mask vector for a voter.
- * 
+ *
  * For each pair (i, j) where i < j (sorted by address):
  *   - voter i ADDS the mask
  *   - voter j SUBTRACTS the mask
- * 
+ *
  * When all voters' masked votes are summed, masks cancel: Σ masks = 0
  */
 export function computeMaskVector(
@@ -239,8 +245,13 @@ export function computeMaskVector(
 /**
  * Apply mask to vote vector: p_i = (v_i + mask_i) mod CURVE_ORDER
  */
-export function applyMask(voteVector: bigint[], maskVector: bigint[]): string[] {
-  return voteVector.map((v, i) => bigintToHex(mod(v + maskVector[i], CURVE_ORDER)));
+export function applyMask(
+  voteVector: bigint[],
+  maskVector: bigint[],
+): string[] {
+  return voteVector.map((v, i) =>
+    bigintToHex(mod(v + maskVector[i], CURVE_ORDER)),
+  );
 }
 
 // ─── Aggregation ────────────────────────────────────────────────────

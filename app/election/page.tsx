@@ -1,20 +1,19 @@
 "use client";
 
-import { Suspense, useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { useAccount, useSignMessage } from "wagmi";
 import { ConnectKitButton } from "connectkit";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useAccount, useSignMessage } from "wagmi";
 import {
-  type ElectionConfig,
-  type Voter,
-  type BallotData,
-  computeElectionId,
-  encodeVoteVector,
-  ballotSignMessage,
-  deriveKeypair,
-  computeMaskVector,
   applyMask,
+  type BallotData,
+  ballotSignMessage,
+  computeElectionId,
+  computeMaskVector,
+  deriveKeypair,
+  type ElectionConfig,
+  encodeVoteVector,
   serializeBallot,
 } from "../lib/crypto";
 
@@ -206,18 +205,16 @@ function ElectionPageContent() {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <div className="mb-4 text-4xl">✅</div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Ballot Cast
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight">Ballot Cast</h1>
             <p className="mt-2 text-zinc-400">
               Send this link to the election organizer to submit your vote.
             </p>
           </div>
 
           <div className="rounded-xl border border-zinc-800 p-6">
-            <label className="mb-3 block text-sm font-semibold text-zinc-400">
+            <p className="mb-3 text-sm font-semibold text-zinc-400">
               Your Ballot Link
-            </label>
+            </p>
             <div className="flex items-center gap-3">
               <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
                 {resultString}
@@ -295,9 +292,7 @@ function ElectionPageContent() {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-zinc-500">Eligible Voters</span>
-            <span className="text-sm font-medium">
-              {config.voters.length}
-            </span>
+            <span className="text-sm font-medium">{config.voters.length}</span>
           </div>
           <div className="border-t border-zinc-800 pt-4">
             <span className="text-sm text-zinc-500">Election ID</span>
@@ -308,16 +303,14 @@ function ElectionPageContent() {
         </div>
 
         <div className="rounded-xl border border-zinc-800 p-6 space-y-4">
-          <h2 className="text-lg font-semibold">
-            Connect Wallet to Vote
-          </h2>
+          <h2 className="text-lg font-semibold">Connect Wallet to Vote</h2>
           <ConnectKitButton />
 
           {isConnected && !isAuthorized && (
             <div className="rounded-lg border border-red-800 bg-red-950/30 p-4">
               <p className="text-sm text-red-400">
-                Your wallet ({address}) is not on the voter allowlist for
-                this election.
+                Your wallet ({address}) is not on the voter allowlist for this
+                election.
               </p>
             </div>
           )}
@@ -388,9 +381,10 @@ function ElectionPageContent() {
                   const usedByOthers = rankedChoices
                     .filter((_, i) => i !== position)
                     .filter((v) => v !== null) as number[];
+                  const rankId = `ranked-${position}`;
                   return (
-                    <div key={position} className="space-y-1">
-                      <label className="text-sm text-zinc-400">
+                    <div key={rankId} className="space-y-1">
+                      <label htmlFor={rankId} className="text-sm text-zinc-400">
                         {position === 0
                           ? "1st"
                           : position === 1
@@ -401,6 +395,7 @@ function ElectionPageContent() {
                         Choice ({weights[position]} pts)
                       </label>
                       <select
+                        id={rankId}
                         value={selected ?? ""}
                         onChange={(e) =>
                           updateRanked(
@@ -429,6 +424,44 @@ function ElectionPageContent() {
               </div>
             )}
 
+            {config.votingMethod === "score" && (
+              <div className="space-y-4">
+                <p className="text-sm text-zinc-400">
+                  Rate each candidate from 0 to {config.scoreMax ?? 5}.
+                </p>
+                {config.candidates.map((candidate, idx) => {
+                  const max = config.scoreMax ?? 5;
+                  return (
+                    <div
+                      key={candidate}
+                      className="rounded-lg border border-zinc-800 p-4 space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">{candidate}</span>
+                        <span className="text-sm font-bold tabular-nums text-zinc-300">
+                          {scoreChoices[idx] ?? 0}/{max}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={max}
+                        value={scoreChoices[idx] ?? 0}
+                        onChange={(e) =>
+                          updateScore(idx, Number(e.target.value))
+                        }
+                        className="w-full accent-white"
+                      />
+                      <div className="flex justify-between text-xs text-zinc-600">
+                        <span>0</span>
+                        <span>{max}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             {status && (
               <p
                 className={`text-sm ${status.startsWith("Error") ? "text-red-400" : "text-zinc-400"}`}
@@ -441,8 +474,7 @@ function ElectionPageContent() {
               type="button"
               onClick={handleSubmitVote}
               disabled={
-                isSubmitDisabled() ||
-                (!!status && !status.startsWith("Error"))
+                isSubmitDisabled() || (!!status && !status.startsWith("Error"))
               }
               className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
             >
