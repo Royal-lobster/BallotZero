@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { decompressFromUrl } from "../lib/compression";
 import {
   type AggregatedResult,
+  type BallotData,
   computeElectionId,
   type ElectionConfig,
 } from "../lib/crypto";
@@ -44,8 +45,21 @@ function ResultsContent() {
   let result: AggregatedResult;
   let config: ElectionConfig;
   try {
-    result = JSON.parse(decompressFromUrl(dataParam)) as AggregatedResult;
     config = JSON.parse(decompressFromUrl(configParam)) as ElectionConfig;
+    const electionId = computeElectionId(config);
+    const raw = JSON.parse(decompressFromUrl(dataParam));
+    // Restore election_id stripped during compression (derivable from config)
+    result = {
+      election_id: raw.election_id ?? electionId,
+      tally: raw.tally,
+      included_ballots: raw.included_ballots.map(
+        (b: Omit<BallotData, "election_id"> & { election_id?: string }) => ({
+          election_id: b.election_id ?? electionId,
+          ...b,
+        }),
+      ),
+      aggregation_hash: raw.aggregation_hash,
+    };
   } catch {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6">
@@ -61,8 +75,6 @@ function ResultsContent() {
       </div>
     );
   }
-
-  const electionId = computeElectionId(config);
 
   return (
     <div className="flex min-h-screen flex-col items-center px-6 py-16">
@@ -103,7 +115,7 @@ function ResultsContent() {
         <div className="mt-8 text-center">
           <span className="text-xs text-zinc-500">Election ID: </span>
           <span className="font-mono text-xs text-zinc-600 break-all">
-            {electionId}
+            {result.election_id}
           </span>
         </div>
       </div>

@@ -123,7 +123,16 @@ export function useAggregation() {
         aggregation_hash: aggHash,
       };
 
-      const resultEncoded = compressForUrl(canonicalJson(result));
+      // Strip redundant election_id for URL (derivable from config)
+      const compactBallots = validBallots.map(
+        ({ election_id: _eid, ...rest }) => rest,
+      );
+      const compactResult = {
+        tally: tallyResult,
+        included_ballots: compactBallots,
+        aggregation_hash: aggHash,
+      };
+      const resultEncoded = compressForUrl(canonicalJson(compactResult));
 
       const link = `/results?data=${resultEncoded}&config=${configBase64}`;
 
