@@ -1,12 +1,21 @@
-# BallotZero
+<div align="center">
 
-Run elections and polls where every vote is private and every result is provably fair. No one — not even the organizer — can see how you voted.
+<img src="screenshot.png" width="600" alt="BallotZero Screenshot" />
 
-📝 **Blog post:** [Anonymous Votes with Math](https://srujangurram.me/blog/anonymous-votes-with-math)
+# Ballot Zero
 
-BallotZero is a fully client-side voting system that uses a [Dining Cryptographers Network](https://en.wikipedia.org/wiki/Dining_cryptographers_problem) protocol to ensure individual ballot privacy while allowing the aggregate tally to be computed by simple addition. The election creator is purely a coordinator with no cryptographic privilege.
+**Run elections and polls where every vote is private and every result is provably fair.**
+**No one — not even the organizer — can see how you voted.**
 
-## How It Works
+A fully client-side voting system using a [Dining Cryptographers Network](https://en.wikipedia.org/wiki/Dining_cryptographers_problem) protocol to ensure individual ballot privacy while allowing the aggregate tally to be computed by simple addition. The election creator is purely a coordinator with no cryptographic privilege.
+
+[![Blog Post](https://img.shields.io/badge/Blog-Anonymous_Votes_with_Math-blue)](https://srujangurram.me/blog/anonymous-votes-with-math)
+
+</div>
+
+---
+
+## ⚙️ How It Works
 
 ```
 Voter → /join → connects wallet → gets reusable voter identity
@@ -24,13 +33,13 @@ Creator → /tally → collects ballots → tally (masks cancel) → /results
 4. **Tally** — The creator collects all ballots. The system sums the masked vote vectors — all masks cancel out, revealing the plaintext tally. No decryption.
 5. **Results** — Anyone can view and independently verify the tally.
 
-## Voting Methods
+## 🗳️ Voting Methods
 
 - **Single Choice** — Pick one candidate (0/1 vector)
 - **Approval** — Approve any number of candidates (0/1 vector)
 - **Ranked Choice** — Rank candidates with configurable point weights (e.g. 5, 3, 1)
 
-## Cryptographic Protocol
+## 🔐 Cryptographic Protocol
 
 BallotZero adapts DC-net for wallet-based voting:
 
@@ -55,7 +64,7 @@ BallotZero adapts DC-net for wallet-based voting:
 
 All voters must submit a ballot for masks to cancel. If any voter drops out, the tally is corrupted. This is acceptable for small elections where full participation is expected.
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
 pnpm install
@@ -64,7 +73,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Environment Variables
+### 🔑 Environment Variables
 
 Create a `.env.local` file:
 
@@ -74,7 +83,7 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
 
 Get a free project ID from [WalletConnect Cloud](https://cloud.walletconnect.com/).
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - [Next.js 16](https://nextjs.org/) (App Router) with React 19
 - [ConnectKit](https://docs.family.co/connectkit) + [wagmi](https://wagmi.sh/) + [viem](https://viem.sh/) — wallet connection & signing
@@ -83,7 +92,7 @@ Get a free project ID from [WalletConnect Cloud](https://cloud.walletconnect.com
 - [Tailwind CSS](https://tailwindcss.com/) — styling (dark theme)
 - [Biome](https://biomejs.dev/) — linting & formatting
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 app/
@@ -100,6 +109,6 @@ app/
 └── page.tsx            # Landing page
 ```
 
-## License
+## 📄 License
 
 MIT
