@@ -1,6 +1,7 @@
 import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
 import { useCallback, useRef, useState } from "react";
+import { AddressAvatar } from "../../_components/AddressAvatar";
 import { truncateAddress } from "../../_components/utils";
 import type { Voter } from "../../lib/crypto";
 import type { AliasMap } from "../../lib/storage";
@@ -113,8 +114,6 @@ export function VoterList({
         <div className="mt-3 space-y-2">
           {voters.map((voter) => {
             const epkHex = compressedEpkHex(voter);
-            const avatarColor = `#${voter.address.slice(2, 8)}`;
-            const avatarLabel = voter.address.slice(2, 4).toUpperCase();
             const alias = aliases[voter.address.toLowerCase()] ?? "";
             return (
               <div
@@ -122,12 +121,7 @@ export function VoterList({
                 className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2"
                 title={`Address: ${voter.address}\nPublic Key: ${epkHex}`}
               >
-                <div
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                  style={{ backgroundColor: avatarColor }}
-                >
-                  {avatarLabel}
-                </div>
+                <AddressAvatar address={voter.address} size="md" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="shrink-0 font-mono text-sm text-zinc-200">

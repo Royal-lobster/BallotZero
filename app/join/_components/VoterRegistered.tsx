@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AddressAvatar } from "../../_components/AddressAvatar";
 import { CopyButton } from "../../_components/CopyButton";
 
 interface VoterRegisteredProps {
@@ -42,12 +43,17 @@ export function VoterRegistered({ voterLink, address }: VoterRegisteredProps) {
           Back to Home
         </Link>
 
-        <p
-          className="text-center font-mono text-xs text-zinc-600"
-          title={address?.toLowerCase()}
-        >
-          {address?.toLowerCase()}
-        </p>
+        {address && (
+          <div
+            className="flex items-center justify-center gap-2"
+            title={address.toLowerCase()}
+          >
+            <AddressAvatar address={address} />
+            <p className="font-mono text-xs text-zinc-600">
+              {address.toLowerCase()}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

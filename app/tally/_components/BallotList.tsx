@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { AddressAvatar } from "../../_components/AddressAvatar";
 import { truncateAddress } from "../../_components/utils";
 import type { BallotData } from "../../lib/crypto";
@@ -46,7 +47,7 @@ export function BallotList({ ballots, aliases, onRemove }: BallotListProps) {
             className="shrink-0 text-zinc-500 transition-colors hover:text-red-400"
             aria-label={`Remove ballot from ${ballot.voter_address}`}
           >
-            x
+            <X size={16} />
           </button>
         </div>
       ))}

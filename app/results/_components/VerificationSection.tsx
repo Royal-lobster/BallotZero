@@ -3,6 +3,7 @@
 import { ConnectKitButton } from "connectkit";
 import { useState } from "react";
 import { useAccount } from "wagmi";
+import { AddressAvatar } from "../../_components/AddressAvatar";
 import {
   type AggregatedResult,
   aggregateMaskedVotes,
@@ -125,8 +126,9 @@ export function VerificationSection({
               {result.included_ballots.map((b) => (
                 <li
                   key={b.voter_address}
-                  className="rounded bg-zinc-900 px-3 py-1.5 font-mono text-xs text-zinc-300"
+                  className="flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 font-mono text-xs text-zinc-300"
                 >
+                  <AddressAvatar address={b.voter_address} />
                   {b.voter_address}
                 </li>
               ))}

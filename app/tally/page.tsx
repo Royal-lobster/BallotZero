@@ -157,15 +157,15 @@ function AggregateContent() {
             )}
           </div>
 
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <label
-                htmlFor="ballotInput"
-                className="text-sm font-medium text-zinc-300"
-              >
-                Collect Ballots
-              </label>
-              {parsedConfig && (
+          {parsedConfig && (
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label
+                  htmlFor="ballotInput"
+                  className="text-sm font-medium text-zinc-300"
+                >
+                  Collect Ballots
+                </label>
                 <button
                   type="button"
                   onClick={copyElectionLink}
@@ -173,55 +173,55 @@ function AggregateContent() {
                 >
                   {copiedElectionLink ? "Copied!" : "Copy Election Link"}
                 </button>
-              )}
-            </div>
-            <p className="mb-2 text-xs text-zinc-500">
-              Paste ballot links or strings from voters.
-            </p>
-            {/* biome-ignore lint/a11y/noStaticElementInteractions: wrapper div delegates focus to inner input */}
-            <div
-              className="flex w-full cursor-text items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 focus-within:border-zinc-600"
-              onClick={() => ballotState.ballotInputRef.current?.focus()}
-              onKeyDown={() => ballotState.ballotInputRef.current?.focus()}
-            >
-              <input
-                ref={ballotState.ballotInputRef}
-                id="ballotInput"
-                type="text"
-                onChange={(e) => {
-                  // controlled only for clearing
-                  e.target.value;
-                  ballotState.setBallotError("");
-                }}
-                onPaste={(e) => {
-                  e.preventDefault();
-                  const pasted = e.clipboardData.getData("text/plain");
-                  ballotState.addBallot(pasted);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
+              </div>
+              <p className="mb-2 text-xs text-zinc-500">
+                Paste ballot links or strings from voters.
+              </p>
+              {/* biome-ignore lint/a11y/noStaticElementInteractions: wrapper div delegates focus to inner input */}
+              <div
+                className="flex w-full cursor-text items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 focus-within:border-zinc-600"
+                onClick={() => ballotState.ballotInputRef.current?.focus()}
+                onKeyDown={() => ballotState.ballotInputRef.current?.focus()}
+              >
+                <input
+                  ref={ballotState.ballotInputRef}
+                  id="ballotInput"
+                  type="text"
+                  onChange={(e) => {
+                    // controlled only for clearing
+                    e.target.value;
+                    ballotState.setBallotError("");
+                  }}
+                  onPaste={(e) => {
                     e.preventDefault();
-                    const input = e.currentTarget;
-                    ballotState.addBallot(input.value);
-                    input.value = "";
-                  }
-                }}
-                placeholder="Paste a ballot link or string..."
-                className="min-w-0 flex-1 bg-transparent font-mono text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
+                    const pasted = e.clipboardData.getData("text/plain");
+                    ballotState.addBallot(pasted);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const input = e.currentTarget;
+                      ballotState.addBallot(input.value);
+                      input.value = "";
+                    }
+                  }}
+                  placeholder="Paste a ballot link or string..."
+                  className="min-w-0 flex-1 bg-transparent font-mono text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
+                />
+              </div>
+              {ballotState.ballotError && (
+                <p className="mt-1.5 text-xs text-red-400">
+                  {ballotState.ballotError}
+                </p>
+              )}
+
+              <BallotList
+                ballots={ballotState.ballots}
+                aliases={aliases}
+                onRemove={ballotState.removeBallot}
               />
             </div>
-            {ballotState.ballotError && (
-              <p className="mt-1.5 text-xs text-red-400">
-                {ballotState.ballotError}
-              </p>
-            )}
-
-            <BallotList
-              ballots={ballotState.ballots}
-              aliases={aliases}
-              onRemove={ballotState.removeBallot}
-            />
-          </div>
+          )}
 
           {parsedConfig && (
             <CollectionProgress
