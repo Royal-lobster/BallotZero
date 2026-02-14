@@ -11,9 +11,9 @@ export function TallyTable({ config, tally }: TallyTableProps) {
     .sort((a, b) => b.score - a.score);
 
   return (
-    <div className="mb-8 rounded-xl border border-zinc-800 p-6">
-      <h2 className="mb-4 text-lg font-semibold">Final Tally</h2>
-      <div className="overflow-hidden rounded-lg border border-zinc-800">
+    <div className="mb-8 overflow-hidden rounded-xl border border-zinc-800">
+      <h2 className="px-6 pt-6 pb-4 text-lg font-semibold">Final Tally</h2>
+      <div>
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800 bg-zinc-900/50">
@@ -48,7 +48,7 @@ export function TallyTable({ config, tally }: TallyTableProps) {
         </table>
       </div>
       {config.votingMethod === "ranked" && config.rankedWeights && (
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="px-6 py-3 text-xs text-zinc-500">
           Scores reflect weighted ranked-choice voting (weights:{" "}
           {config.rankedWeights.join(", ")})
         </p>
