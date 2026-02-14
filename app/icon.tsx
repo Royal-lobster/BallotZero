@@ -20,9 +20,9 @@ export default function Icon() {
 			}}
 		>
 			<svg
-				width="26"
-				height="30"
-				viewBox="0 0 72 84"
+				width="24"
+				height="24"
+				viewBox="-6 0 84 84"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
 			>
