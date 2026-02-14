@@ -95,7 +95,8 @@ function ResultsContent() {
               <p className="mt-1 text-zinc-400">{config.description}</p>
             )}
             <p className="mt-1 text-sm text-zinc-500">
-              {METHOD_LABELS[config.votingMethod] ?? config.votingMethod} · {config.candidates.length} candidates
+              {METHOD_LABELS[config.votingMethod] ?? config.votingMethod} ·{" "}
+              {config.candidates.length} candidates
             </p>
           </div>
         </div>

@@ -53,9 +53,7 @@ export function VerificationSection({
         result.included_ballots,
         config.candidates.length,
       );
-      const tallyMatch = recomputedTally.every(
-        (v, i) => v === result.tally[i],
-      );
+      const tallyMatch = recomputedTally.every((v, i) => v === result.tally[i]);
 
       if (!tallyMatch) {
         setVerifyStatus(
