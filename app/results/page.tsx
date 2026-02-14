@@ -150,9 +150,16 @@ function ResultsContent() {
         <div className="mb-8 rounded-xl border border-zinc-800 p-6">
           <h2 className="mb-4 text-lg font-semibold">Election Info</h2>
           <div className="space-y-3">
-            <div>
-              <span className="text-sm text-zinc-400">Title: </span>
-              <span className="font-semibold">{config.title}</span>
+            <div className="flex items-center gap-3">
+              {config.emoji && (
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-2xl">
+                  {config.emoji}
+                </div>
+              )}
+              <div>
+                <span className="text-sm text-zinc-400">Title: </span>
+                <span className="font-semibold">{config.title}</span>
+              </div>
             </div>
             {config.description && (
               <div>

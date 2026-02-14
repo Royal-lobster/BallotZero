@@ -12,16 +12,17 @@ export interface SavedElection {
   electionId: string;
   title: string;
   createdAt: number;
+  emoji?: string;
 }
 
 const ELECTIONS_INDEX_KEY = "ballotzero:elections";
 
-export async function saveConfig(electionId: string, configBase64: string, title?: string): Promise<void> {
+export async function saveConfig(electionId: string, configBase64: string, title?: string, emoji?: string): Promise<void> {
   await set(storeKey(electionId, "config"), configBase64);
   if (title) {
     const index = await getSavedElections();
     if (!index.some((e) => e.electionId === electionId)) {
-      index.push({ electionId, title, createdAt: Date.now() });
+      index.push({ electionId, title, createdAt: Date.now(), emoji });
       await set(ELECTIONS_INDEX_KEY, index);
     }
   }

@@ -20,8 +20,10 @@ export interface ElectionConfig {
   description: string;
   candidates: string[];
   voters: Voter[];
-  votingMethod: "single" | "approval" | "ranked";
+  votingMethod: "single" | "approval" | "ranked" | "score";
   rankedWeights?: number[];
+  scoreMax?: number;
+  emoji?: string;
 }
 
 export interface BallotData {
@@ -113,6 +115,13 @@ export function encodeVoteVector(
       const ranked = selection as number[];
       for (let i = 0; i < ranked.length && i < weights.length; i++) {
         vector[ranked[i]] = BigInt(weights[i]);
+      }
+      break;
+    }
+    case "score": {
+      const scores = selection as number[];
+      for (let i = 0; i < scores.length && i < numCandidates; i++) {
+        vector[i] = BigInt(scores[i]);
       }
       break;
     }

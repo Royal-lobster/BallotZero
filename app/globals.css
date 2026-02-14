@@ -17,3 +17,23 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Emoji Picker Theme - Match zinc color scheme */
+.EmojiPickerReact {
+  --epr-bg-color: #18181b !important;
+  --epr-category-label-bg-color: #18181b !important;
+  --epr-text-color: #e4e4e7 !important;
+  --epr-search-input-bg-color: #27272a !important;
+  --epr-search-input-bg-color-active: #3f3f46 !important;
+  --epr-search-input-text-color: #e4e4e7 !important;
+  --epr-search-input-placeholder-color: #52525b !important;
+  --epr-search-border-color: #27272a !important;
+  --epr-hover-bg-color: #27272a !important;
+  --epr-focus-bg-color: #3f3f46 !important;
+  --epr-highlight-color: #ffffff !important;
+  --epr-picker-border-color: #27272a !important;
+  --epr-category-icon-active-color: #ffffff !important;
+  --epr-skin-tone-picker-menu-color: #27272a !important;
+  background-color: #18181b !important;
+  border-color: #27272a !important;
+}

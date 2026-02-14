@@ -30,6 +30,7 @@ function ElectionPageContent() {
     new Set(),
   );
   const [rankedChoices, setRankedChoices] = useState<(number | null)[]>([]);
+  const [scoreChoices, setScoreChoices] = useState<number[]>([]);
   const [resultString, setResultString] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -48,6 +49,7 @@ function ElectionPageContent() {
           ? (decoded.rankedWeights?.length ?? 3)
           : 0;
       setRankedChoices(new Array(numPositions).fill(null));
+      setScoreChoices(new Array(decoded.candidates?.length ?? 0).fill(0));
     } catch {
       setParseError("Invalid election configuration.");
     }
@@ -81,12 +83,21 @@ function ElectionPageContent() {
     });
   }
 
+  function updateScore(idx: number, value: number) {
+    setScoreChoices((prev) => {
+      const next = [...prev];
+      next[idx] = value;
+      return next;
+    });
+  }
+
   function isSubmitDisabled(): boolean {
     if (!config) return true;
     if (config.votingMethod === "single") return singleChoice === null;
     if (config.votingMethod === "approval") return approvalChoices.size === 0;
     if (config.votingMethod === "ranked")
       return rankedChoices.some((c) => c === null);
+    if (config.votingMethod === "score") return false; // all-zeros is valid
     return true;
   }
 
@@ -100,6 +111,8 @@ function ElectionPageContent() {
         selection = singleChoice as number;
       } else if (config.votingMethod === "approval") {
         selection = Array.from(approvalChoices);
+      } else if (config.votingMethod === "score") {
+        selection = scoreChoices;
       } else {
         selection = rankedChoices as number[];
       }
@@ -184,6 +197,7 @@ function ElectionPageContent() {
     single: "Single Choice",
     approval: "Approval Voting",
     ranked: "Ranked Choice",
+    score: "Score Voting",
   };
 
   if (resultString) {
@@ -245,9 +259,16 @@ function ElectionPageContent() {
     <div className="flex min-h-screen flex-col items-center px-6 py-16">
       <div className="w-full max-w-2xl space-y-8">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">
-            {config.title}
-          </h1>
+          <div className="flex items-center gap-3">
+            {config.emoji && (
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-zinc-800 text-3xl">
+                {config.emoji}
+              </div>
+            )}
+            <h1 className="text-3xl font-bold tracking-tight">
+              {config.title}
+            </h1>
+          </div>
           <p className="text-zinc-400">{config.description}</p>
         </div>
 

@@ -457,24 +457,34 @@ function AggregateContent() {
 
             {/* Saved elections picker */}
             {!parsedConfig && savedElections.length > 0 && (
-              <div className="mb-3 space-y-2">
+              <div className="mb-3 space-y-3">
                 <p className="text-xs text-zinc-500">
                   Load a previously created election:
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid gap-3 sm:grid-cols-2">
                   {savedElections.map((election) => (
                     <button
                       key={election.electionId}
                       type="button"
                       onClick={() => loadSavedElection(election.electionId)}
-                      className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-left transition-colors hover:border-zinc-600 hover:bg-zinc-800"
+                      className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 text-left transition-all hover:border-zinc-600 hover:bg-zinc-800/80 hover:shadow-lg hover:shadow-zinc-900/50"
                     >
-                      <span className="block text-sm font-medium text-zinc-200">
-                        {election.title}
-                      </span>
-                      <span className="text-xs text-zinc-500">
-                        {new Date(election.createdAt).toLocaleDateString()}
-                      </span>
+                      <div className="flex items-start gap-3">
+                        {election.emoji && (
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-2xl transition-colors group-hover:bg-zinc-700">
+                            {election.emoji}
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <h3 className="mb-1 font-semibold text-zinc-200 group-hover:text-white">
+                            {election.title}
+                          </h3>
+                          <p className="text-xs text-zinc-500">
+                            {new Date(election.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                     </button>
                   ))}
                 </div>
