@@ -44,6 +44,9 @@ importers:
       react-hook-form:
         specifier: ^7.71.1
         version: 7.71.1(react@19.2.3)
+      react-hook-form-persist:
+        specifier: ^3.0.0
+        version: 3.0.0(react-hook-form@7.71.1(react@19.2.3))(react@19.2.3)
       recharts:
         specifier: ^3.7.0
         version: 3.7.0(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react-is@16.13.1)(react@19.2.3)(redux@5.0.1)
@@ -1205,6 +1208,12 @@ packages:
     resolution: {integrity: sha512-yELu4WmLPw5Mr/lmeEpox5rw3RETacE++JgHqQzd2dg+YbJuat3jH4ingc+WPZhxaoFzdv9y33G+F7Nl5O0GBg==}
     peerDependencies:
       react: ^19.2.3
+
+  react-hook-form-persist@3.0.0:
+    resolution: {integrity: sha512-6nwW65JyFpBem9RjLYAWvIFxOLoCk0E13iB9e5yeF5jeHlwx1ua0M77FvwhPpD8eaCz7hG4ziCdOxRcnJVUSxQ==}
+    peerDependencies:
+      react: '>= 16.3'
+      react-hook-form: '>= 6'
 
   react-hook-form@7.71.1:
     resolution: {integrity: sha512-9SUJKCGKo8HUSsCO+y0CtqkqI5nNuaDqTxyqPsZPqIwudpj4rCrAz/jZV+jn57bx5gtZKOh3neQu94DXMc+w5w==}
@@ -2383,6 +2392,11 @@ snapshots:
     dependencies:
       react: 19.2.3
       scheduler: 0.27.0
+
+  react-hook-form-persist@3.0.0(react-hook-form@7.71.1(react@19.2.3))(react@19.2.3):
+    dependencies:
+      react: 19.2.3
+      react-hook-form: 7.71.1(react@19.2.3)
 
   react-hook-form@7.71.1(react@19.2.3):
     dependencies:

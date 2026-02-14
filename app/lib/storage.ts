@@ -56,6 +56,12 @@ export async function saveVoterKeys(
   await set(`ballotzero:draft:${electionDraft}:voterkeys`, keys);
 }
 
+// ─── Draft Cleanup (for Create page) ─────────────────────────────────
+
+export async function clearDraft(): Promise<void> {
+  await set("ballotzero:draft:current:voterkeys", []);
+}
+
 // ─── Ballots (for Aggregate page) ──────────────────────────────────
 
 export async function getBallots(electionId: string): Promise<string[]> {

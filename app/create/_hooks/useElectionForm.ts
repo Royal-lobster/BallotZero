@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
+import useFormPersist from "react-hook-form-persist";
 import { compressForUrl } from "../../lib/compression";
 import {
   computeElectionId,
   type ElectionConfig,
   type Voter,
 } from "../../lib/crypto";
-import { saveConfig } from "../../lib/storage";
+import { clearDraft, saveConfig } from "../../lib/storage";
 
 export interface ElectionFormValues {
   title: string;
@@ -15,6 +16,8 @@ export interface ElectionFormValues {
   rankedWeights: string;
   scoreMax: number;
 }
+
+const STORAGE_KEY = "ballotzero:draft:form";
 
 export interface ElectionResult {
   electionId: string;
@@ -32,6 +35,12 @@ export function useElectionForm() {
       rankedWeights: "5,3,1",
       scoreMax: 5,
     },
+  });
+
+  useFormPersist(STORAGE_KEY, {
+    watch: form.watch,
+    setValue: form.setValue,
+    storage: typeof window !== "undefined" ? window.localStorage : undefined,
   });
 
   const validate = (
@@ -96,6 +105,10 @@ export function useElectionForm() {
       values.emoji || undefined,
     );
     const votingLink = `${window.location.origin}/vote?config=${configEncoded}`;
+
+    // Clear draft after successful creation
+    window.localStorage.removeItem(STORAGE_KEY);
+    await clearDraft();
 
     return { electionId, votingLink, configBase64: configEncoded };
   };

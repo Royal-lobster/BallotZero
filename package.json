@@ -22,6 +22,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
+    "react-hook-form-persist": "^3.0.0",
     "recharts": "^3.7.0",
     "viem": "^2.45.3",
     "wagmi": "^3.4.3"
