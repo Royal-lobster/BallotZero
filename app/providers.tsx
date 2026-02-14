@@ -1,10 +1,10 @@
 "use client";
 
-import { WagmiProvider, createConfig, http } from "wagmi";
-import { mainnet } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import { type ReactNode, useState } from "react";
+import { createConfig, http, WagmiProvider } from "wagmi";
+import { mainnet } from "wagmi/chains";
 
 const config = createConfig(
   getDefaultConfig({
@@ -12,10 +12,12 @@ const config = createConfig(
     transports: {
       [mainnet.id]: http(),
     },
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
+    walletConnectProjectId:
+      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
     appName: "BallotZero",
-    appDescription: "Trustless, verifiable elections with homomorphic encryption",
-  })
+    appDescription:
+      "Trustless, verifiable elections with homomorphic encryption",
+  }),
 );
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -23,9 +25,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider theme="midnight">
-          {children}
-        </ConnectKitProvider>
+        <ConnectKitProvider theme="midnight">{children}</ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

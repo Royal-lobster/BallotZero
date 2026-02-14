@@ -1,17 +1,17 @@
-import Link from "next/link";
 import {
+  BadgeCheck,
+  BarChart3,
   BookOpen,
   Github,
-  PlusCircle,
-  UserPlus,
-  Send,
-  Vote,
-  BarChart3,
-  ShieldCheck,
-  Lock,
-  BadgeCheck,
   Globe,
+  Lock,
+  PlusCircle,
+  Send,
+  ShieldCheck,
+  UserPlus,
+  Vote,
 } from "lucide-react";
+import Link from "next/link";
 
 const steps = [
   {
@@ -35,8 +35,7 @@ const steps = [
     icon: Send,
     role: "Organizer",
     title: "Share the Voting Link",
-    description:
-      "The organizer sends each voter a link to cast their ballot.",
+    description: "The organizer sends each voter a link to cast their ballot.",
   },
   {
     number: 4,

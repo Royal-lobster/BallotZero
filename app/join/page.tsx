@@ -1,113 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { ConnectKitButton } from "connectkit";
 import Link from "next/link";
 import { useAccount, useSignMessage } from "wagmi";
-import { ConnectKitButton } from "connectkit";
-import { type Voter, deriveKeypair, serializeVoter } from "../lib/crypto";
+import { VoterRegistered } from "./_components/VoterRegistered";
+import { useVoterIdentity } from "./_hooks/useVoterIdentity";
 
 export default function OnboardPage() {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
+  const { status, voterKey, voterLink, handleGenerate } = useVoterIdentity({
+    address,
+    signMessageAsync,
+  });
 
-  const [status, setStatus] = useState<string | null>(null);
-  const [voterKey, setVoterKey] = useState<string | null>(null);
-  const [voterLink, setVoterLink] = useState<string | null>(null);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [copiedRaw, setCopiedRaw] = useState(false);
-
-  async function handleGenerate() {
-    if (!address) return;
-
-    try {
-      setStatus("Waiting for wallet signature...");
-      const sig = await signMessageAsync({ message: "BallotZero:onboard" });
-
-      setStatus("Deriving keypair...");
-      const { epk } = deriveKeypair(sig);
-
-      const voter: Voter = { address: address.toLowerCase(), epk };
-      const serialized = serializeVoter(voter);
-
-      const link = `${window.location.origin}/create#voterkey=${serialized}`;
-      setVoterKey(serialized);
-      setVoterLink(link);
-      setStatus(null);
-      navigator.clipboard.writeText(link).catch(() => {});
-    } catch (err) {
-      setStatus(
-        `Error: ${err instanceof Error ? err.message : "Signing rejected or failed."}`,
-      );
-    }
-  }
-
-  function copyLink() {
-    if (!voterLink) return;
-    navigator.clipboard.writeText(voterLink);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-  }
-
-  function copyRawKey() {
-    if (!voterKey) return;
-    navigator.clipboard.writeText(voterKey);
-    setCopiedRaw(true);
-    setTimeout(() => setCopiedRaw(false), 2000);
-  }
-
-  if (voterKey) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <div className="mb-4 text-4xl">✅</div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              You're In
-            </h1>
-            <p className="mt-2 text-zinc-400">
-              Send this link to whoever is setting up the election so they can
-              add you.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-zinc-800 p-6">
-            <label className="mb-3 block text-sm font-semibold text-zinc-400">
-              Your Voter Link
-            </label>
-            <div className="flex items-center gap-3">
-              <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
-                {voterLink}
-              </code>
-              <button
-                type="button"
-                onClick={copyLink}
-                className="shrink-0 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium transition-colors hover:border-zinc-500 hover:bg-zinc-800"
-              >
-                {copiedLink ? "Copied!" : "Copy"}
-              </button>
-            </div>
-            <p className="mt-3 text-xs text-zinc-500">
-              They can open this link or paste it when creating an election.
-              This is a one-time step — the same key works for all elections.
-            </p>
-          </div>
-
-          <Link
-            href="/"
-            className="block rounded-full border border-zinc-700 px-8 py-3 text-center text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
-          >
-            Back to Home
-          </Link>
-
-          <p
-            className="text-center font-mono text-xs text-zinc-600"
-            title={address?.toLowerCase()}
-          >
-            {address?.toLowerCase()}
-          </p>
-        </div>
-      </div>
-    );
+  if (voterKey && voterLink) {
+    return <VoterRegistered voterLink={voterLink} address={address} />;
   }
 
   return (
@@ -154,7 +62,9 @@ export default function OnboardPage() {
                     />
                   </svg>
                   <span>
-                    {isConnected ? ensName || truncatedAddress : "Connect Wallet"}
+                    {isConnected
+                      ? ensName || truncatedAddress
+                      : "Connect Wallet"}
                   </span>
                 </div>
                 <div className="absolute inset-0 -z-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 transition-opacity group-hover:opacity-100" />

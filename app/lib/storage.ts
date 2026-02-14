@@ -17,7 +17,12 @@ export interface SavedElection {
 
 const ELECTIONS_INDEX_KEY = "ballotzero:elections";
 
-export async function saveConfig(electionId: string, configBase64: string, title?: string, emoji?: string): Promise<void> {
+export async function saveConfig(
+  electionId: string,
+  configBase64: string,
+  title?: string,
+  emoji?: string,
+): Promise<void> {
   await set(storeKey(electionId, "config"), configBase64);
   if (title) {
     const index = await getSavedElections();
@@ -39,10 +44,15 @@ export async function getSavedElections(): Promise<SavedElection[]> {
 // ─── Voter Keys (for Create page) ──────────────────────────────────
 
 export async function getVoterKeys(electionDraft: string): Promise<string[]> {
-  return (await get<string[]>(`ballotzero:draft:${electionDraft}:voterkeys`)) ?? [];
+  return (
+    (await get<string[]>(`ballotzero:draft:${electionDraft}:voterkeys`)) ?? []
+  );
 }
 
-export async function saveVoterKeys(electionDraft: string, keys: string[]): Promise<void> {
+export async function saveVoterKeys(
+  electionDraft: string,
+  keys: string[],
+): Promise<void> {
   await set(`ballotzero:draft:${electionDraft}:voterkeys`, keys);
 }
 
@@ -52,11 +62,17 @@ export async function getBallots(electionId: string): Promise<string[]> {
   return (await get<string[]>(storeKey(electionId, "ballots"))) ?? [];
 }
 
-export async function saveBallots(electionId: string, ballots: string[]): Promise<void> {
+export async function saveBallots(
+  electionId: string,
+  ballots: string[],
+): Promise<void> {
   await set(storeKey(electionId, "ballots"), ballots);
 }
 
-export async function addBallot(electionId: string, ballot: string): Promise<void> {
+export async function addBallot(
+  electionId: string,
+  ballot: string,
+): Promise<void> {
   const ballots = await getBallots(electionId);
   if (!ballots.includes(ballot)) {
     ballots.push(ballot);
@@ -64,7 +80,10 @@ export async function addBallot(electionId: string, ballot: string): Promise<voi
   }
 }
 
-export async function removeBallot(electionId: string, ballot: string): Promise<void> {
+export async function removeBallot(
+  electionId: string,
+  ballot: string,
+): Promise<void> {
   const ballots = (await getBallots(electionId)).filter((b) => b !== ballot);
   await saveBallots(electionId, ballots);
 }
@@ -104,13 +123,18 @@ export async function getAddressBook(): Promise<AddressBook> {
   return (await get<AddressBook>(ADDRESS_BOOK_KEY)) ?? {};
 }
 
-export async function saveToAddressBook(address: string, serializedKey: string): Promise<void> {
+export async function saveToAddressBook(
+  address: string,
+  serializedKey: string,
+): Promise<void> {
   const book = await getAddressBook();
   book[address.toLowerCase()] = serializedKey;
   await set(ADDRESS_BOOK_KEY, book);
 }
 
-export async function saveAllToAddressBook(entries: { address: string; serializedKey: string }[]): Promise<void> {
+export async function saveAllToAddressBook(
+  entries: { address: string; serializedKey: string }[],
+): Promise<void> {
   const book = await getAddressBook();
   for (const { address, serializedKey } of entries) {
     book[address.toLowerCase()] = serializedKey;
