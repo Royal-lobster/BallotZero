@@ -62,15 +62,15 @@ export default async function Image() {
 			>
 				{/* biome-ignore lint/a11y/noSvgWithoutTitle: generated image, not DOM */}
 				<svg
-					width="72"
-					height="72"
-					viewBox="0 0 64 64"
+					width="56"
+					height="70"
+					viewBox="0 0 64 80"
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg"
 				>
 					{/* Right/bottom arc */}
 					<path
-						d="M47.3 18.4 A19 23 0 0 1 19.4 49.2"
+						d="M44.8 24.2 A17 24 0 0 1 23.2 60.5"
 						stroke="#fafafa"
 						strokeWidth="4"
 						strokeLinecap="round"
@@ -78,7 +78,7 @@ export default async function Image() {
 					/>
 					{/* Left/top arc */}
 					<path
-						d="M16.7 45.6 A19 23 0 0 1 44.6 14.8"
+						d="M19.2 55.8 A17 24 0 0 1 40.8 19.5"
 						stroke="#fafafa"
 						strokeWidth="4"
 						strokeLinecap="round"
@@ -86,10 +86,10 @@ export default async function Image() {
 					/>
 					{/* Slash */}
 					<line
-						x1="13"
-						y1="53"
-						x2="51"
-						y2="11"
+						x1="16"
+						y1="66"
+						x2="48"
+						y2="14"
 						stroke="#fafafa"
 						strokeWidth="4"
 						strokeLinecap="round"
