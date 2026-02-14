@@ -24,8 +24,22 @@ function AggregateContent() {
   const initialConfig = searchParams.get("config") ?? "";
 
   const [configBase64, setConfigBase64] = useState(initialConfig);
+  const [linkInput, setLinkInput] = useState("");
   const [copiedElectionLink, setCopiedElectionLink] = useState(false);
   const [aliases, setAliasMap] = useState<AliasMap>({});
+
+  function handleLinkInput(value: string) {
+    setLinkInput(value);
+    try {
+      const url = new URL(value);
+      const config = url.searchParams.get("config");
+      if (config) {
+        setConfigBase64(config);
+      }
+    } catch {
+      // not a valid URL yet, ignore
+    }
+  }
   const [savedElections, setSavedElections] = useState<SavedElection[]>([]);
 
   useEffect(() => {
@@ -120,19 +134,24 @@ function AggregateContent() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setConfigBase64("")}
+                  onClick={() => { setConfigBase64(""); setLinkInput(""); }}
                   className="shrink-0 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
                 >
                   Change
                 </button>
               </div>
             ) : (
-              <textarea
+              <input
                 id="config"
-                value={configBase64}
-                onChange={(e) => setConfigBase64(e.target.value)}
-                placeholder="Paste the election data..."
-                rows={3}
+                type="text"
+                value={linkInput}
+                onChange={(e) => handleLinkInput(e.target.value)}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const pasted = e.clipboardData.getData("text/plain").trim();
+                  handleLinkInput(pasted);
+                }}
+                placeholder="Paste voting link..."
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 font-mono text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-colors focus:border-zinc-600"
               />
             )}
