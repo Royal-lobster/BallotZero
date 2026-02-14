@@ -20,27 +20,35 @@ export default function AppleIcon() {
 			}}
 		>
 			<svg
-				width="110"
-				height="128"
-				viewBox="0 0 72 84"
+				width="120"
+				height="120"
+				viewBox="0 0 40 52"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
 			>
-				{/* Shield */}
-				<path
-					d="M36 4L8 18V40C8 58 20 72 36 80C52 72 64 58 64 40V18L36 4Z"
-					fill="rgba(245,158,11,0.12)"
-					stroke="#f59e0b"
-					strokeWidth="3"
+				<title>BallotZero</title>
+				{/* Ballot box — the "0" */}
+				<rect
+					x="4"
+					y="18"
+					width="32"
+					height="30"
+					rx="11"
+					fill="rgba(255,120,136,0.12)"
+					stroke="#FF7888"
+					strokeWidth="2.5"
 				/>
-				{/* Checkmark */}
-				<path
-					d="M24 42L33 51L48 32"
-					stroke="#f59e0b"
-					strokeWidth="5"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-					fill="none"
+				{/* Ballot paper dropping in */}
+				<rect
+					x="13"
+					y="2"
+					width="14"
+					height="20"
+					rx="2"
+					transform="rotate(-8 20 12)"
+					fill="#0a0a0a"
+					stroke="#FF7888"
+					strokeWidth="2"
 				/>
 			</svg>
 		</div>,

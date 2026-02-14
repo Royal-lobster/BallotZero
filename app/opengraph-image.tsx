@@ -19,7 +19,6 @@ export default async function Image() {
 				justifyContent: "center",
 				background: "#0a0a0a",
 				position: "relative",
-				overflow: "hidden",
 			}}
 		>
 			{/* Radial glow behind the content */}
@@ -32,25 +31,13 @@ export default async function Image() {
 					height: "900px",
 					borderRadius: "50%",
 					background:
-						"radial-gradient(circle, rgba(245,158,11,0.06) 0%, rgba(16,185,129,0.04) 40%, transparent 70%)",
+						"radial-gradient(circle, rgba(255,120,136,0.06) 0%, rgba(255,120,136,0.03) 40%, transparent 70%)",
 					transform: "translateX(-50%)",
 					display: "flex",
 				}}
 			/>
 
-			{/* Subtle grid lines */}
-			<div
-				style={{
-					position: "absolute",
-					inset: 0,
-					display: "flex",
-					backgroundImage:
-						"linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
-					backgroundSize: "60px 60px",
-				}}
-			/>
-
-			{/* Top accent gradient bar */}
+			{/* Top accent line */}
 			<div
 				style={{
 					position: "absolute",
@@ -60,11 +47,11 @@ export default async function Image() {
 					height: "3px",
 					display: "flex",
 					background:
-						"linear-gradient(90deg, transparent 5%, #f59e0b 25%, #10b981 50%, #0ea5e9 75%, transparent 95%)",
+						"linear-gradient(90deg, transparent 10%, #FF7888 50%, transparent 90%)",
 				}}
 			/>
 
-			{/* Shield icon */}
+			{/* Ballot box logo */}
 			<div
 				style={{
 					display: "flex",
@@ -74,32 +61,40 @@ export default async function Image() {
 				}}
 			>
 				<svg
-					width="72"
-					height="84"
-					viewBox="0 0 72 84"
+					width="64"
+					height="83"
+					viewBox="0 0 40 52"
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg"
 				>
-					{/* Shield body */}
-					<path
-						d="M36 4L8 18V40C8 58 20 72 36 80C52 72 64 58 64 40V18L36 4Z"
-						fill="rgba(245,158,11,0.08)"
-						stroke="rgba(245,158,11,0.4)"
+					<title>BallotZero logo</title>
+					{/* Ballot box — the "0" */}
+					<rect
+						x="4"
+						y="18"
+						width="32"
+						height="30"
+						rx="11"
+						fill="rgba(255,120,136,0.08)"
+						stroke="rgba(255,120,136,0.4)"
 						strokeWidth="2"
 					/>
-					{/* Checkmark */}
-					<path
-						d="M26 42L33 49L46 34"
-						stroke="#f59e0b"
-						strokeWidth="3.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						fill="none"
+					{/* Ballot paper dropping in */}
+					<rect
+						x="13"
+						y="2"
+						width="14"
+						height="20"
+						rx="2"
+						transform="rotate(-8 20 12)"
+						fill="#0a0a0a"
+						stroke="#FF7888"
+						strokeWidth="2"
 					/>
 				</svg>
 			</div>
 
-			{/* Wordmark */}
+			{/* Title */}
 			<div
 				style={{
 					display: "flex",
@@ -122,7 +117,7 @@ export default async function Image() {
 					style={{
 						fontSize: "72px",
 						fontWeight: 700,
-						color: "#f59e0b",
+						color: "#FF7888",
 						lineHeight: 1,
 					}}
 				>
@@ -158,8 +153,8 @@ export default async function Image() {
 						gap: "8px",
 						padding: "8px 20px",
 						borderRadius: "999px",
-						border: "1px solid rgba(245,158,11,0.25)",
-						background: "rgba(245,158,11,0.06)",
+						border: "1px solid rgba(255,255,255,0.12)",
+						background: "rgba(255,255,255,0.04)",
 					}}
 				>
 					<div
@@ -167,11 +162,11 @@ export default async function Image() {
 							width: "8px",
 							height: "8px",
 							borderRadius: "50%",
-							background: "#f59e0b",
+							background: "#FF7888",
 							display: "flex",
 						}}
 					/>
-					<span style={{ fontSize: "15px", color: "#fbbf24" }}>
+					<span style={{ fontSize: "15px", color: "#a1a1aa" }}>
 						Private Ballots
 					</span>
 				</div>
@@ -182,8 +177,8 @@ export default async function Image() {
 						gap: "8px",
 						padding: "8px 20px",
 						borderRadius: "999px",
-						border: "1px solid rgba(16,185,129,0.25)",
-						background: "rgba(16,185,129,0.06)",
+						border: "1px solid rgba(255,255,255,0.12)",
+						background: "rgba(255,255,255,0.04)",
 					}}
 				>
 					<div
@@ -191,11 +186,11 @@ export default async function Image() {
 							width: "8px",
 							height: "8px",
 							borderRadius: "50%",
-							background: "#10b981",
+							background: "#FF7888",
 							display: "flex",
 						}}
 					/>
-					<span style={{ fontSize: "15px", color: "#34d399" }}>Verifiable</span>
+					<span style={{ fontSize: "15px", color: "#a1a1aa" }}>Verifiable</span>
 				</div>
 				<div
 					style={{
@@ -204,8 +199,8 @@ export default async function Image() {
 						gap: "8px",
 						padding: "8px 20px",
 						borderRadius: "999px",
-						border: "1px solid rgba(14,165,233,0.25)",
-						background: "rgba(14,165,233,0.06)",
+						border: "1px solid rgba(255,255,255,0.12)",
+						background: "rgba(255,255,255,0.04)",
 					}}
 				>
 					<div
@@ -213,15 +208,15 @@ export default async function Image() {
 							width: "8px",
 							height: "8px",
 							borderRadius: "50%",
-							background: "#0ea5e9",
+							background: "#FF7888",
 							display: "flex",
 						}}
 					/>
-					<span style={{ fontSize: "15px", color: "#38bdf8" }}>Trustless</span>
+					<span style={{ fontSize: "15px", color: "#a1a1aa" }}>Trustless</span>
 				</div>
 			</div>
 
-			{/* Bottom accent gradient bar */}
+			{/* Bottom accent line */}
 			<div
 				style={{
 					position: "absolute",
@@ -231,7 +226,7 @@ export default async function Image() {
 					height: "3px",
 					display: "flex",
 					background:
-						"linear-gradient(90deg, transparent 5%, #0ea5e9 25%, #10b981 50%, #f59e0b 75%, transparent 95%)",
+						"linear-gradient(90deg, transparent 10%, #FF7888 50%, transparent 90%)",
 				}}
 			/>
 		</div>,
