@@ -71,6 +71,7 @@ function AggregateContent() {
   const [config, setConfig] = useState<ElectionConfig | null>(null);
   const [copied, setCopied] = useState(false);
   const [ballotsLoaded, setBallotsLoaded] = useState(false);
+  const [copiedElectionLink, setCopiedElectionLink] = useState(false);
   const [aliases, setAliasMap] = useState<AliasMap>({});
   const [savedElections, setSavedElections] = useState<SavedElection[]>([]);
 
@@ -392,6 +393,68 @@ function AggregateContent() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  function copyElectionLink() {
+    const link = `${window.location.origin}/election?config=${encodeURIComponent(configBase64)}`;
+    navigator.clipboard.writeText(link);
+    setCopiedElectionLink(true);
+    setTimeout(() => setCopiedElectionLink(false), 2000);
+  }
+
+  if (resultsLink) {
+    const fullResultsUrl = `${typeof window !== "undefined" ? window.location.origin : ""}${resultsLink}`;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <div className="mb-4 text-4xl">✅</div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Aggregation Complete
+            </h1>
+            <p className="mt-2 text-zinc-400">
+              {validCount} ballot{validCount !== 1 ? "s" : ""} aggregated successfully.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-zinc-800 p-6">
+            <label className="mb-3 block text-sm font-semibold text-zinc-400">
+              Results Link
+            </label>
+            <div className="flex items-center gap-3">
+              <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
+                {fullResultsUrl}
+              </code>
+              <button
+                type="button"
+                onClick={copyLink}
+                className="shrink-0 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium transition-colors hover:border-zinc-500 hover:bg-zinc-800"
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+            <p className="mt-3 text-xs text-zinc-500">
+              Share this link so anyone can verify the election results.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <Link
+              href={resultsLink}
+              className="rounded-full bg-white px-8 py-3 text-center text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
+            >
+              View Results →
+            </Link>
+            <Link
+              href="/"
+              className="rounded-full border border-zinc-700 px-8 py-3 text-center text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center px-6 py-16">
       <div className="w-full max-w-2xl">
@@ -483,12 +546,23 @@ function AggregateContent() {
 
           {/* Ballot Input */}
           <div>
-            <label
-              htmlFor="ballotInput"
-              className="mb-2 block text-sm font-medium text-zinc-300"
-            >
-              Collect Ballots
-            </label>
+            <div className="mb-2 flex items-center justify-between">
+              <label
+                htmlFor="ballotInput"
+                className="text-sm font-medium text-zinc-300"
+              >
+                Collect Ballots
+              </label>
+              {parsedConfig && (
+                <button
+                  type="button"
+                  onClick={copyElectionLink}
+                  className="rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+                >
+                  {copiedElectionLink ? "Copied!" : "Copy Election Link"}
+                </button>
+              )}
+            </div>
             <p className="mb-2 text-xs text-zinc-500">
               Paste ballot links or strings from voters.
             </p>
@@ -624,196 +698,9 @@ function AggregateContent() {
           </button>
         </div>
 
-        {status && (
+        {status && status.startsWith("Error") && (
           <div className="mt-6 rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3">
-            <p
-              className={`text-sm ${status.startsWith("Error") ? "text-red-400" : "text-zinc-300"}`}
-            >
-              {status}
-            </p>
-          </div>
-        )}
-
-        {postMissingVoters.length > 0 && (
-          <div className="mt-6 rounded-xl border border-yellow-900/50 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-yellow-400">
-              ⚠️ Missing Voters ({postMissingVoters.length})
-            </h2>
-            <p className="mb-3 text-sm text-zinc-400">
-              DC-net requires ALL registered voters to submit a ballot for masks
-              to cancel correctly. The following registered voters did not
-              submit:
-            </p>
-            <ul className="space-y-1">
-              {postMissingVoters.map((addr) => (
-                <li
-                  key={addr}
-                  className="flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5"
-                >
-                  <AddressAvatar address={addr} />
-                  <span className="font-mono text-xs text-yellow-300">
-                    {addr}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {tally && config && (
-          <div className="mt-8 space-y-6">
-            <div className="rounded-xl border border-zinc-800 p-6">
-              <h2 className="mb-4 text-lg font-semibold">Tally Results</h2>
-              <div className="overflow-hidden rounded-lg border border-zinc-800">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                      <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-400">
-                        Rank
-                      </th>
-                      <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-400">
-                        Candidate
-                      </th>
-                      <th className="px-4 py-2.5 text-right text-xs font-medium text-zinc-400">
-                        {config.votingMethod === "ranked" ? "Score" : "Votes"}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {config.candidates
-                      .map((candidate, i) => ({
-                        candidate,
-                        score: tally[i],
-                      }))
-                      .sort((a, b) => b.score - a.score)
-                      .map((t, i) => (
-                        <tr
-                          key={t.candidate}
-                          className="border-b border-zinc-800/50 last:border-0"
-                        >
-                          <td className="px-4 py-2.5 text-sm text-zinc-500">
-                            {i + 1}
-                          </td>
-                          <td className="px-4 py-2.5 text-sm font-medium">
-                            {i === 0 && "🏆 "}
-                            {t.candidate}
-                          </td>
-                          <td className="px-4 py-2.5 text-right font-mono text-sm">
-                            {t.score}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-              {config.votingMethod === "ranked" && config.rankedWeights && (
-                <p className="mt-2 text-xs text-zinc-500">
-                  Scores reflect weighted ranked-choice voting (weights:{" "}
-                  {config.rankedWeights.join(", ")})
-                </p>
-              )}
-            </div>
-
-            <div className="rounded-xl border border-zinc-800 p-6">
-              <h2 className="mb-4 text-lg font-semibold">
-                Aggregation Summary
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <span className="text-sm text-zinc-400">Valid Ballots: </span>
-                  <span className="font-semibold">{validCount}</span>
-                </div>
-                <div>
-                  <span className="mb-2 block text-sm text-zinc-400">
-                    Included Voters:
-                  </span>
-                  <ul className="space-y-1">
-                    {includedVoters.map((addr) => (
-                      <li
-                        key={addr}
-                        className="flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5"
-                      >
-                        <AddressAvatar address={addr} />
-                        <span className="font-mono text-xs text-zinc-300">
-                          {addr}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {rejected.length > 0 && (
-              <div className="rounded-xl border border-red-900/50 p-6">
-                <h2 className="mb-4 text-lg font-semibold text-red-400">
-                  Rejected Ballots ({rejected.length})
-                </h2>
-                <ul className="space-y-2">
-                  {rejected.map((r) => (
-                    <li
-                      key={`${r.index}-${r.reason}`}
-                      className="text-sm text-zinc-400"
-                    >
-                      <span className="text-red-400">Ballot #{r.index}</span>
-                      {r.voterAddress && (
-                        <span className="ml-2 font-mono text-xs text-zinc-500">
-                          ({r.voterAddress.slice(0, 10)}...)
-                        </span>
-                      )}
-                      <span className="ml-2">— {r.reason}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {resultsLink && (
-              <div className="rounded-xl border border-zinc-800 p-6">
-                <h2 className="mb-4 text-lg font-semibold">
-                  Shareable Results Link
-                </h2>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="text"
-                    readOnly
-                    value={`${typeof window !== "undefined" ? window.location.origin : ""}${resultsLink}`}
-                    className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 font-mono text-xs text-zinc-300 outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={copyLink}
-                    className="shrink-0 rounded-full border border-zinc-700 px-4 py-2 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
-                  >
-                    {copied ? "Copied!" : "Copy"}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {rejected.length > 0 && validCount === 0 && (
-          <div className="mt-8 rounded-xl border border-red-900/50 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-red-400">
-              Rejected Ballots ({rejected.length})
-            </h2>
-            <ul className="space-y-2">
-              {rejected.map((r) => (
-                <li
-                  key={`${r.index}-${r.reason}`}
-                  className="text-sm text-zinc-400"
-                >
-                  <span className="text-red-400">Ballot #{r.index}</span>
-                  {r.voterAddress && (
-                    <span className="ml-2 font-mono text-xs text-zinc-500">
-                      ({r.voterAddress.slice(0, 10)}...)
-                    </span>
-                  )}
-                  <span className="ml-2">— {r.reason}</span>
-                </li>
-              ))}
-            </ul>
+            <p className="text-sm text-red-400">{status}</p>
           </div>
         )}
       </div>
