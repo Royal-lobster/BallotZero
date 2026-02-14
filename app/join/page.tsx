@@ -47,9 +47,8 @@ export default function OnboardPage() {
               <button
                 type="button"
                 onClick={show}
-                className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-zinc-800 to-zinc-700 px-6 py-4 text-base font-semibold transition-all hover:from-zinc-700 hover:to-zinc-600 hover:shadow-lg hover:shadow-zinc-900/50"
+                className="flex w-full items-center justify-center gap-3 rounded-full border border-zinc-700 px-8 py-3 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
               >
-                <div className="relative z-10 flex items-center justify-center gap-3">
                   {isConnected && address ? (
                     <AddressAvatar address={address} />
                   ) : (
@@ -73,8 +72,6 @@ export default function OnboardPage() {
                       ? ensName || truncatedAddress
                       : "Connect Wallet"}
                   </span>
-                </div>
-                <div className="absolute inset-0 -z-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 transition-opacity group-hover:opacity-100" />
               </button>
             )}
           </ConnectKitButton.Custom>
@@ -135,9 +132,8 @@ export default function OnboardPage() {
                 type="button"
                 onClick={handleGenerate}
                 disabled={!!status && !status.startsWith("Error")}
-                className="group relative w-full overflow-hidden rounded-xl bg-white px-8 py-4 text-base font-semibold text-black transition-all hover:bg-zinc-100 hover:shadow-lg hover:shadow-white/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:shadow-none"
+                className="flex w-full items-center justify-center gap-3 rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <div className="relative z-10 flex items-center justify-center gap-3">
                   <svg
                     className="h-5 w-5"
                     fill="none"
@@ -153,8 +149,6 @@ export default function OnboardPage() {
                     />
                   </svg>
                   <span>Sign &amp; Generate</span>
-                </div>
-                <div className="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-0 transition-opacity group-hover:opacity-100 group-disabled:opacity-0" />
               </button>
             </div>
           )}

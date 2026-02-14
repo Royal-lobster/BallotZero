@@ -57,9 +57,9 @@ export default function CreateElectionPage() {
         <div>
           <Link
             href="/"
-            className="mb-6 inline-flex items-center gap-1 text-sm text-zinc-400 transition-colors hover:text-zinc-200"
+            className="mb-8 inline-block text-sm text-zinc-500 transition-colors hover:text-zinc-300"
           >
-            ← Back
+            ← Back to Home
           </Link>
           <h1 className="text-3xl font-bold tracking-tight">Create Election</h1>
           <p className="mt-2 text-zinc-400">
