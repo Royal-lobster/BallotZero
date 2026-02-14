@@ -3,6 +3,7 @@
 import { ConnectKitButton } from "connectkit";
 import Link from "next/link";
 import { useAccount, useSignMessage } from "wagmi";
+import { AddressAvatar } from "../_components/AddressAvatar";
 import { VoterRegistered } from "./_components/VoterRegistered";
 import { useVoterIdentity } from "./_hooks/useVoterIdentity";
 
@@ -49,20 +50,24 @@ export default function OnboardPage() {
                 className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-zinc-800 to-zinc-700 px-6 py-4 text-base font-semibold transition-all hover:from-zinc-700 hover:to-zinc-600 hover:shadow-lg hover:shadow-zinc-900/50"
               >
                 <div className="relative z-10 flex items-center justify-center gap-3">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                    />
-                  </svg>
+                  {isConnected && address ? (
+                    <AddressAvatar address={address} />
+                  ) : (
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                      />
+                    </svg>
+                  )}
                   <span>
                     {isConnected
                       ? ensName || truncatedAddress
