@@ -270,86 +270,51 @@ export default function CreateElectionPage() {
   if (result) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
-        <div className="w-full max-w-2xl space-y-8">
+        <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <div className="mb-4 text-4xl">✅</div>
             <h1 className="text-3xl font-bold tracking-tight">
               Election Created
             </h1>
             <p className="mt-2 text-zinc-400">
-              Share the voting link with voters so they can cast their ballots.
+              Send this link to all voters to start collecting ballots.
             </p>
           </div>
 
-          <div className="space-y-6">
-            <div className="rounded-xl border border-zinc-800 p-6">
-              <h2 className="mb-1 text-sm font-semibold text-zinc-400">
-                Election ID
-              </h2>
-              <div className="flex items-center gap-3">
-                <code className="min-w-0 flex-1 truncate font-mono text-sm text-zinc-300">
-                  {result.electionId}
-                </code>
-                <CopyButton text={result.electionId} />
-              </div>
+          <div className="rounded-xl border border-zinc-800 p-6">
+            <label className="mb-3 block text-sm font-semibold text-zinc-400">
+              Voting Link
+            </label>
+            <div className="flex items-center gap-3">
+              <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
+                {result.votingLink}
+              </code>
+              <CopyButton text={result.votingLink} />
             </div>
-
-            <div className="rounded-xl border border-zinc-800 p-6">
-              <h2 className="mb-1 text-sm font-semibold text-zinc-400">
-                Voting Link
-              </h2>
-              <p className="mb-3 text-xs text-zinc-500">
-                Share this link with voters so they can cast their ballots.
-              </p>
-              <div className="flex items-center gap-3">
-                <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
-                  {result.votingLink}
-                </code>
-                <CopyButton text={result.votingLink} />
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-amber-900/50 bg-amber-950/20 p-6">
-              <h2 className="mb-1 text-sm font-semibold text-amber-400">
-                📋 Next Steps
-              </h2>
-              <p className="text-sm text-amber-400/80">
-                Share the voting link with all voters listed above. Each voter
-                will connect their wallet and cast their vote. Once all ballots
-                are collected, aggregate them on the Aggregate page.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-zinc-800 p-6">
-              <h2 className="mb-1 text-sm font-semibold text-zinc-400">
-                Election Config (Base64)
-              </h2>
-              <p className="mb-3 text-xs text-zinc-500">
-                You'll need this when aggregating ballots.
-              </p>
-              <div className="flex items-center gap-3">
-                <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
-                  {result.configBase64}
-                </code>
-                <CopyButton text={result.configBase64} />
-              </div>
-            </div>
+            <p className="mt-3 text-xs text-zinc-500">
+              Each voter will connect their wallet and cast their vote. Once
+              all ballots are collected, aggregate them to produce the tally.
+            </p>
           </div>
 
-          <div className="flex justify-center gap-4 pt-4">
+          <div className="flex flex-col gap-3">
+            <Link
+              href={`/aggregate?config=${encodeURIComponent(result.configBase64)}`}
+              className="rounded-full bg-white px-8 py-3 text-center text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
+            >
+              Collect &amp; Aggregate Ballots →
+            </Link>
             <Link
               href="/"
-              className="rounded-full border border-zinc-700 px-8 py-3 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
+              className="rounded-full border border-zinc-700 px-8 py-3 text-center text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
             >
               Back to Home
             </Link>
-            <Link
-              href={`/aggregate?config=${encodeURIComponent(result.configBase64)}`}
-              className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
-            >
-              Go to Aggregate
-            </Link>
           </div>
+
+          <p className="text-center font-mono text-xs text-zinc-600" title={result.electionId}>
+            ID: {result.electionId.slice(0, 16)}…
+          </p>
         </div>
       </div>
     );

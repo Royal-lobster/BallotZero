@@ -2,6 +2,7 @@
 
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useAccount, useSignMessage } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import {
@@ -185,6 +186,61 @@ function ElectionPageContent() {
     ranked: "Ranked Choice",
   };
 
+  if (resultString) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <div className="mb-4 text-4xl">✅</div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Ballot Cast
+            </h1>
+            <p className="mt-2 text-zinc-400">
+              Send this link to the election organizer to submit your vote.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-zinc-800 p-6">
+            <label className="mb-3 block text-sm font-semibold text-zinc-400">
+              Your Ballot Link
+            </label>
+            <div className="flex items-center gap-3">
+              <code className="min-w-0 flex-1 truncate rounded-lg bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-300">
+                {resultString}
+              </code>
+              <button
+                type="button"
+                onClick={copyResult}
+                className="shrink-0 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium transition-colors hover:border-zinc-500 hover:bg-zinc-800"
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+            <p className="mt-3 text-xs text-zinc-500">
+              The link has been auto-copied to your clipboard. Your vote is
+              cryptographically masked — no one can see how you voted.
+            </p>
+          </div>
+
+          <Link
+            href="/"
+            className="block rounded-full border border-zinc-700 px-8 py-3 text-center text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
+          >
+            Back to Home
+          </Link>
+
+          <div className="text-center text-xs text-zinc-600">
+            <span>{config.title}</span>
+            <span className="mx-1.5">·</span>
+            <span>{methodLabels[config.votingMethod]}</span>
+            <span className="mx-1.5">·</span>
+            <span>{config.candidates.length} candidates</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center px-6 py-16">
       <div className="w-full max-w-2xl space-y-8">
@@ -230,173 +286,148 @@ function ElectionPageContent() {
           </div>
         </div>
 
-        {resultString ? (
-          <div className="rounded-xl border border-zinc-800 p-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-green-400 text-lg">✓</span>
-              <h2 className="text-lg font-semibold">Ballot Cast</h2>
+        <div className="rounded-xl border border-zinc-800 p-6 space-y-4">
+          <h2 className="text-lg font-semibold">
+            Connect Wallet to Vote
+          </h2>
+          <ConnectKitButton />
+
+          {isConnected && !isAuthorized && (
+            <div className="rounded-lg border border-red-800 bg-red-950/30 p-4">
+              <p className="text-sm text-red-400">
+                Your wallet ({address}) is not on the voter allowlist for
+                this election.
+              </p>
             </div>
-            <p className="text-sm text-zinc-400">
-              Send this link to the election organizer. It has been auto-copied
-              to your clipboard.
-            </p>
-            <div className="w-full rounded-lg border border-zinc-700 bg-zinc-900 p-4 font-mono text-xs text-zinc-300 break-all">
-              {resultString}
-            </div>
-            <button
-              type="button"
-              onClick={copyResult}
-              className="rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
-            >
-              {copied ? "Copied!" : "Copy Link"}
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="rounded-xl border border-zinc-800 p-6 space-y-4">
-              <h2 className="text-lg font-semibold">
-                Connect Wallet to Vote
-              </h2>
-              <ConnectKitButton />
+          )}
+        </div>
 
-              {isConnected && !isAuthorized && (
-                <div className="rounded-lg border border-red-800 bg-red-950/30 p-4">
-                  <p className="text-sm text-red-400">
-                    Your wallet ({address}) is not on the voter allowlist for
-                    this election.
-                  </p>
-                </div>
-              )}
-            </div>
+        {isConnected && isAuthorized && (
+          <div className="rounded-xl border border-zinc-800 p-6 space-y-6">
+            <h2 className="text-lg font-semibold">Cast Your Vote</h2>
 
-            {isConnected && isAuthorized && (
-              <div className="rounded-xl border border-zinc-800 p-6 space-y-6">
-                <h2 className="text-lg font-semibold">Cast Your Vote</h2>
-
-                {config.votingMethod === "single" && (
-                  <div className="space-y-3">
-                    {config.candidates.map((candidate, idx) => (
-                      <label
-                        key={candidate}
-                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors ${
-                          singleChoice === idx
-                            ? "border-white bg-zinc-800/50"
-                            : "border-zinc-800 hover:border-zinc-600"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="single-choice"
-                          checked={singleChoice === idx}
-                          onChange={() => setSingleChoice(idx)}
-                          className="accent-white"
-                        />
-                        <span>{candidate}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-
-                {config.votingMethod === "approval" && (
-                  <div className="space-y-3">
-                    <p className="text-sm text-zinc-400">
-                      Select all candidates you approve of.
-                    </p>
-                    {config.candidates.map((candidate, idx) => (
-                      <label
-                        key={candidate}
-                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors ${
-                          approvalChoices.has(idx)
-                            ? "border-white bg-zinc-800/50"
-                            : "border-zinc-800 hover:border-zinc-600"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={approvalChoices.has(idx)}
-                          onChange={() => toggleApproval(idx)}
-                          className="accent-white"
-                        />
-                        <span>{candidate}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-
-                {config.votingMethod === "ranked" && (
-                  <div className="space-y-4">
-                    <p className="text-sm text-zinc-400">
-                      Select your ranked choices. Points:{" "}
-                      {(config.rankedWeights ?? [5, 3, 1]).join(", ")}
-                    </p>
-                    {rankedChoices.map((selected, position) => {
-                      const weights = config.rankedWeights ?? [5, 3, 1];
-                      const usedByOthers = rankedChoices
-                        .filter((_, i) => i !== position)
-                        .filter((v) => v !== null) as number[];
-                      return (
-                        <div key={position} className="space-y-1">
-                          <label className="text-sm text-zinc-400">
-                            {position === 0
-                              ? "1st"
-                              : position === 1
-                                ? "2nd"
-                                : position === 2
-                                  ? "3rd"
-                                  : `${position + 1}th`}{" "}
-                            Choice ({weights[position]} pts)
-                          </label>
-                          <select
-                            value={selected ?? ""}
-                            onChange={(e) =>
-                              updateRanked(
-                                position,
-                                e.target.value === ""
-                                  ? null
-                                  : Number(e.target.value),
-                              )
-                            }
-                            className="w-full rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-sm text-zinc-200 focus:outline-none focus:border-zinc-500"
-                          >
-                            <option value="">Select a candidate</option>
-                            {config.candidates.map((candidate, idx) => (
-                              <option
-                                key={candidate}
-                                value={idx}
-                                disabled={usedByOthers.includes(idx)}
-                              >
-                                {candidate}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {status && (
-                  <p
-                    className={`text-sm ${status.startsWith("Error") ? "text-red-400" : "text-zinc-400"}`}
+            {config.votingMethod === "single" && (
+              <div className="space-y-3">
+                {config.candidates.map((candidate, idx) => (
+                  <label
+                    key={candidate}
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors ${
+                      singleChoice === idx
+                        ? "border-white bg-zinc-800/50"
+                        : "border-zinc-800 hover:border-zinc-600"
+                    }`}
                   >
-                    {status}
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleSubmitVote}
-                  disabled={
-                    isSubmitDisabled() ||
-                    (!!status && !status.startsWith("Error"))
-                  }
-                  className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Submit Vote
-                </button>
+                    <input
+                      type="radio"
+                      name="single-choice"
+                      checked={singleChoice === idx}
+                      onChange={() => setSingleChoice(idx)}
+                      className="accent-white"
+                    />
+                    <span>{candidate}</span>
+                  </label>
+                ))}
               </div>
             )}
-          </>
+
+            {config.votingMethod === "approval" && (
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-400">
+                  Select all candidates you approve of.
+                </p>
+                {config.candidates.map((candidate, idx) => (
+                  <label
+                    key={candidate}
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors ${
+                      approvalChoices.has(idx)
+                        ? "border-white bg-zinc-800/50"
+                        : "border-zinc-800 hover:border-zinc-600"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={approvalChoices.has(idx)}
+                      onChange={() => toggleApproval(idx)}
+                      className="accent-white"
+                    />
+                    <span>{candidate}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {config.votingMethod === "ranked" && (
+              <div className="space-y-4">
+                <p className="text-sm text-zinc-400">
+                  Select your ranked choices. Points:{" "}
+                  {(config.rankedWeights ?? [5, 3, 1]).join(", ")}
+                </p>
+                {rankedChoices.map((selected, position) => {
+                  const weights = config.rankedWeights ?? [5, 3, 1];
+                  const usedByOthers = rankedChoices
+                    .filter((_, i) => i !== position)
+                    .filter((v) => v !== null) as number[];
+                  return (
+                    <div key={position} className="space-y-1">
+                      <label className="text-sm text-zinc-400">
+                        {position === 0
+                          ? "1st"
+                          : position === 1
+                            ? "2nd"
+                            : position === 2
+                              ? "3rd"
+                              : `${position + 1}th`}{" "}
+                        Choice ({weights[position]} pts)
+                      </label>
+                      <select
+                        value={selected ?? ""}
+                        onChange={(e) =>
+                          updateRanked(
+                            position,
+                            e.target.value === ""
+                              ? null
+                              : Number(e.target.value),
+                          )
+                        }
+                        className="w-full rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-sm text-zinc-200 focus:outline-none focus:border-zinc-500"
+                      >
+                        <option value="">Select a candidate</option>
+                        {config.candidates.map((candidate, idx) => (
+                          <option
+                            key={candidate}
+                            value={idx}
+                            disabled={usedByOthers.includes(idx)}
+                          >
+                            {candidate}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {status && (
+              <p
+                className={`text-sm ${status.startsWith("Error") ? "text-red-400" : "text-zinc-400"}`}
+              >
+                {status}
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={handleSubmitVote}
+              disabled={
+                isSubmitDisabled() ||
+                (!!status && !status.startsWith("Error"))
+              }
+              className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Submit Vote
+            </button>
+          </div>
         )}
       </div>
     </div>
