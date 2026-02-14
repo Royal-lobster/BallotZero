@@ -62,11 +62,11 @@ export default function OnboardPage() {
           <div className="text-center">
             <div className="mb-4 text-4xl">✅</div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Voter Key Generated
+              You're In
             </h1>
             <p className="mt-2 text-zinc-400">
-              Send this link to the election organizer to be added to an
-              election.
+              Send this link to whoever is setting up the election so they can
+              add you.
             </p>
           </div>
 
@@ -87,9 +87,8 @@ export default function OnboardPage() {
               </button>
             </div>
             <p className="mt-3 text-xs text-zinc-500">
-              The organizer can open this link or paste it when creating an
-              election. This is a one-time step — the same key works for all
-              elections.
+              They can open this link or paste it when creating an election.
+              This is a one-time step — the same key works for all elections.
             </p>
           </div>
 
@@ -116,11 +115,11 @@ export default function OnboardPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">
-            Get Your Voter Key
+            Join an Election
           </h1>
           <p className="mt-2 text-zinc-400">
-            Connect your wallet and sign a message to derive your BallotZero
-            keypair. Share it with the organizer to join an election.
+            Connect your wallet to generate your voter identity. Share it with
+            whoever is setting up the election.
           </p>
         </div>
 
@@ -170,8 +169,13 @@ export default function OnboardPage() {
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-800 text-xs font-bold">
                     2
                   </div>
-                  <span>Generate your voter key</span>
+                  <span>Generate your voter identity</span>
                 </div>
+                <p className="ml-8 text-xs text-zinc-500">
+                  Your wallet will ask you to sign a message. This does not send
+                  any transaction or spend any funds — it just creates a unique
+                  identity for voting.
+                </p>
               </div>
 
               {status && (
@@ -229,7 +233,7 @@ export default function OnboardPage() {
                       d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                     />
                   </svg>
-                  <span>Generate Key</span>
+                  <span>Sign &amp; Generate</span>
                 </div>
                 <div className="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-0 transition-opacity group-hover:opacity-100 group-disabled:opacity-0" />
               </button>

@@ -123,13 +123,12 @@ function ElectionPageContent() {
         config.rankedWeights,
       );
 
-      setStatus("Signing to derive your BallotZero key...");
+      setStatus("Sign the first message to generate your voter identity...");
       const regSig = await signMessageAsync({ message: "BallotZero:onboard" });
 
-      setStatus("Deriving election keypair...");
+      setStatus("Preparing your vote...");
       const { esk } = deriveKeypair(regSig);
 
-      setStatus("Computing mask vector...");
       const maskVector = computeMaskVector(
         address,
         esk,
@@ -138,10 +137,9 @@ function ElectionPageContent() {
         electionId,
       );
 
-      setStatus("Applying mask to vote...");
       const maskedVote = applyMask(voteVector, maskVector);
 
-      setStatus("Waiting for ballot signature...");
+      setStatus("Sign the second message to finalize your ballot...");
       const ballotMsg = ballotSignMessage(electionId, maskedVote);
       const ballotSig = await signMessageAsync({ message: ballotMsg });
 
@@ -153,7 +151,7 @@ function ElectionPageContent() {
       };
 
       const serialized = serializeBallot(ballot);
-      const link = `${window.location.origin}/aggregate#ballot=${serialized}`;
+      const link = `${window.location.origin}/tally#ballot=${serialized}`;
       setResultString(link);
       setStatus(null);
       navigator.clipboard.writeText(link).catch(() => {});
@@ -207,7 +205,7 @@ function ElectionPageContent() {
             <div className="mb-4 text-4xl">✅</div>
             <h1 className="text-3xl font-bold tracking-tight">Ballot Cast</h1>
             <p className="mt-2 text-zinc-400">
-              Send this link to the election organizer to submit your vote.
+              Send this link to whoever is running the election to submit your vote.
             </p>
           </div>
 
@@ -469,6 +467,14 @@ function ElectionPageContent() {
                 {status}
               </p>
             )}
+
+            <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 px-4 py-3">
+              <p className="text-xs text-zinc-500">
+                Submitting will ask for two wallet signatures. Neither sends a
+                transaction or spends any funds — the first creates your voter
+                identity, the second signs your ballot so it can be verified.
+              </p>
+            </div>
 
             <button
               type="button"

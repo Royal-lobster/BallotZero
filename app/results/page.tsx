@@ -143,7 +143,7 @@ function ResultsContent() {
           Election Results
         </h1>
         <p className="mb-8 text-zinc-400">
-          View and verify the election results. No decryption needed.
+          View the final results and verify your vote was counted.
         </p>
 
         {/* Election Info */}
@@ -242,7 +242,7 @@ function ResultsContent() {
 
         {/* Aggregation Info */}
         <div className="mb-8 rounded-xl border border-zinc-800 p-6">
-          <h2 className="mb-4 text-lg font-semibold">Aggregation Summary</h2>
+          <h2 className="mb-4 text-lg font-semibold">Verification Details</h2>
           <div className="space-y-3">
             <div>
               <span className="text-sm text-zinc-400">Included Ballots: </span>
@@ -280,8 +280,8 @@ function ResultsContent() {
         <div className="rounded-xl border border-zinc-800 p-6">
           <h2 className="mb-4 text-lg font-semibold">✅ Verify Your Ballot</h2>
           <p className="mb-4 text-sm text-zinc-400">
-            Connect your wallet to verify that your ballot was included in the
-            aggregation and that the tally is correct.
+            Connect your wallet to check that your vote was included and that
+            the results are correct.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <ConnectKitButton />

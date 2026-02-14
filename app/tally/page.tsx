@@ -178,7 +178,7 @@ function AggregateContent() {
     }
     // Also handle ?ballot= just in case
     const queryIdx = trimmed.indexOf("ballot=");
-    if (queryIdx !== -1 && trimmed.includes("/aggregate")) {
+    if (queryIdx !== -1 && (trimmed.includes("/tally") || trimmed.includes("/aggregate"))) {
       return trimmed.slice(queryIdx + "ballot=".length);
     }
     return trimmed;
@@ -366,7 +366,7 @@ function AggregateContent() {
   }
 
   function copyElectionLink() {
-    const link = `${window.location.origin}/election?config=${encodeURIComponent(configBase64)}`;
+    const link = `${window.location.origin}/vote?config=${encodeURIComponent(configBase64)}`;
     navigator.clipboard.writeText(link);
     setCopiedElectionLink(true);
     setTimeout(() => setCopiedElectionLink(false), 2000);
@@ -380,10 +380,10 @@ function AggregateContent() {
           <div className="text-center">
             <div className="mb-4 text-4xl">✅</div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Aggregation Complete
+              Votes Counted
             </h1>
             <p className="mt-2 text-zinc-400">
-              {validCount} ballot{validCount !== 1 ? "s" : ""} aggregated successfully.
+              {validCount} ballot{validCount !== 1 ? "s" : ""} counted successfully.
             </p>
           </div>
 
@@ -438,11 +438,10 @@ function AggregateContent() {
         </Link>
 
         <h1 className="mb-2 text-3xl font-bold tracking-tight">
-          Aggregate Ballots
+          Tally Results
         </h1>
         <p className="mb-8 text-zinc-400">
-          Paste the election config and collected ballot links to produce the
-          tally.
+          Collect everyone's ballot links, then count the votes.
         </p>
 
         <div className="space-y-6">
@@ -452,7 +451,7 @@ function AggregateContent() {
               htmlFor="config"
               className="mb-2 block text-sm font-medium text-zinc-300"
             >
-              Election Config
+              Election
             </label>
 
             {/* Saved elections picker */}
@@ -490,7 +489,7 @@ function AggregateContent() {
                 </div>
                 <div className="flex items-center gap-3 text-xs text-zinc-600">
                   <span className="h-px flex-1 bg-zinc-800" />
-                  or paste config
+                  or paste election data
                   <span className="h-px flex-1 bg-zinc-800" />
                 </div>
               </div>
@@ -519,7 +518,7 @@ function AggregateContent() {
                 id="config"
                 value={configBase64}
                 onChange={(e) => setConfigBase64(e.target.value)}
-                placeholder="Paste the base64-encoded election config..."
+                placeholder="Paste the election data..."
                 rows={3}
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 font-mono text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-colors focus:border-zinc-600"
               />
@@ -664,7 +663,7 @@ function AggregateContent() {
                 </div>
               ) : (
                 <p className="text-sm text-green-400">
-                  ✓ All ballots collected — ready to aggregate
+                  ✓ All ballots collected — ready to count
                 </p>
               )}
             </div>
@@ -676,7 +675,7 @@ function AggregateContent() {
             disabled={processing || !configBase64 || ballots.length === 0}
             className="w-full rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {processing ? "Processing..." : "Aggregate"}
+            {processing ? "Counting..." : "Count Votes"}
           </button>
         </div>
 

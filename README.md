@@ -1,25 +1,27 @@
 # BallotZero
 
-Trustless, verifiable elections powered by DC-net pairwise masking. No backend. No decryption keys. No trust required.
+Run elections and polls where every vote is private and every result is provably fair. No one — not even the organizer — can see how you voted.
 
-BallotZero is a fully client-side voting system that uses a [Dining Cryptographers Network](https://en.wikipedia.org/wiki/Dining_cryptographers_problem) protocol to ensure individual ballot privacy while allowing the aggregate tally to be computed by simple addition. The organizer is purely a coordinator with no cryptographic privilege.
+📝 **Blog post:** [Anonymous Votes with Math](https://srujangurram.me/blog/anonymous-votes-with-math)
+
+BallotZero is a fully client-side voting system that uses a [Dining Cryptographers Network](https://en.wikipedia.org/wiki/Dining_cryptographers_problem) protocol to ensure individual ballot privacy while allowing the aggregate tally to be computed by simple addition. The election creator is purely a coordinator with no cryptographic privilege.
 
 ## How It Works
 
 ```
-Voter → /onboard → signs message → gets reusable voter key
+Voter → /join → connects wallet → gets reusable voter identity
                                           ↓
-Organizer → /create → adds voter keys + candidates → voting link
-                                                         ↓
-Voter → /election → connects wallet → casts masked vote → ballot link
-                                                              ↓
-Organizer → /aggregate → collects ballots → tally (masks cancel) → /results
+Creator → /create → adds voters + candidates → voting link
+                                                    ↓
+Voter → /vote → connects wallet → casts masked vote → ballot link
+                                                           ↓
+Creator → /tally → collects ballots → tally (masks cancel) → /results
 ```
 
-1. **Onboard** — Each voter connects their wallet, signs a deterministic message, and receives a reusable voter key. One-time step.
-2. **Create** — The organizer defines the election (title, candidates, voter keys, voting method) and gets a voting link.
-3. **Vote** — Voters connect their wallet, select their choice, and the system masks their vote using pairwise ECDH secrets with every other voter. They share the resulting ballot link with the organizer.
-4. **Aggregate** — The organizer collects all ballots. The system sums the masked vote vectors — all masks cancel out, revealing the plaintext tally. No decryption.
+1. **Join** — Each voter connects their wallet, signs a deterministic message, and receives a reusable voter identity. One-time step.
+2. **Create** — The election creator sets up the election (title, candidates, voters, voting method) and gets a voting link.
+3. **Vote** — Voters connect their wallet, select their choice, and the system masks their vote using pairwise ECDH secrets with every other voter. They share the resulting ballot link with the creator.
+4. **Tally** — The creator collects all ballots. The system sums the masked vote vectors — all masks cancel out, revealing the plaintext tally. No decryption.
 5. **Results** — Anyone can view and independently verify the tally.
 
 ## Voting Methods
@@ -85,10 +87,10 @@ Get a free project ID from [WalletConnect Cloud](https://cloud.walletconnect.com
 
 ```
 app/
-├── onboard/page.tsx    # One-time voter key derivation
+├── join/page.tsx       # One-time voter identity setup
 ├── create/page.tsx     # Election creation
-├── election/page.tsx   # Voting interface
-├── aggregate/page.tsx  # Ballot aggregation & tally
+├── vote/page.tsx       # Voting interface
+├── tally/page.tsx      # Ballot collection & vote counting
 ├── results/page.tsx    # Results display & verification
 ├── lib/
 │   ├── crypto.ts       # DC-net protocol, ECDH, masking, serialization

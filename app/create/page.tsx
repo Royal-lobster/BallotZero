@@ -353,7 +353,7 @@ export default function CreateElectionPage() {
       config.title,
       emoji || undefined,
     );
-    const votingLink = `${window.location.origin}/election?config=${encodeURIComponent(configBase64)}`;
+    const votingLink = `${window.location.origin}/vote?config=${encodeURIComponent(configBase64)}`;
 
     setResult({
       electionId,
@@ -387,17 +387,17 @@ export default function CreateElectionPage() {
               <CopyButton text={result.votingLink} />
             </div>
             <p className="mt-3 text-xs text-zinc-500">
-              Each voter will connect their wallet and cast their vote. Once all
-              ballots are collected, aggregate them to produce the tally.
+              Each voter will connect their wallet and cast their vote. Once
+              everyone has voted, collect and count the results.
             </p>
           </div>
 
           <div className="flex flex-col gap-3">
             <Link
-              href={`/aggregate?config=${encodeURIComponent(result.configBase64)}`}
+              href={`/tally?config=${encodeURIComponent(result.configBase64)}`}
               className="rounded-full bg-white px-8 py-3 text-center text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
             >
-              Collect &amp; Aggregate Ballots →
+              Collect &amp; Count Votes →
             </Link>
             <Link
               href="/"
@@ -430,8 +430,8 @@ export default function CreateElectionPage() {
           </Link>
           <h1 className="text-3xl font-bold tracking-tight">Create Election</h1>
           <p className="mt-2 text-zinc-400">
-            Define your election parameters. No keys are generated — voters will
-            register their own keys.
+            Set up your election — add candidates, choose a voting method, and
+            invite voters.
           </p>
         </div>
 
@@ -634,7 +634,7 @@ export default function CreateElectionPage() {
                 htmlFor="voterInput"
                 className="text-sm font-medium text-zinc-300"
               >
-                Voter Keys <span className="text-red-400">*</span>
+                Voters <span className="text-red-400">*</span>
               </label>
               {addressBookEntries.length > 0 && (
                 <button
@@ -647,7 +647,7 @@ export default function CreateElectionPage() {
               )}
             </div>
             <p className="mb-2 text-xs text-zinc-500">
-              Paste a voter key link or string (from the Onboard page).
+              Paste the link each voter shared with you after joining.
             </p>
             <div className="flex w-full items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 focus-within:border-zinc-600">
               <input
