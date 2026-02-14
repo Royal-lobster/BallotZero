@@ -475,7 +475,7 @@ export default function CreateElectionPage() {
                 id="emoji"
                 type="button"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="relative h-[46px] w-full rounded-lg border border-zinc-800 bg-zinc-900 text-2xl transition-colors hover:border-zinc-600 focus:border-zinc-600 focus:outline-none"
+                className="relative h-11.5 w-full rounded-lg border border-zinc-800 bg-zinc-900 text-2xl transition-colors hover:border-zinc-600 focus:border-zinc-600 focus:outline-none"
               >
                 {emoji || "📊"}
               </button>
