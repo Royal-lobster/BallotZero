@@ -8,10 +8,16 @@ import {
   computeElectionId,
   type ElectionConfig,
 } from "../lib/crypto";
-import { ElectionInfo } from "./_components/ElectionInfo";
+import { ResultsChart } from "./_components/ResultsChart";
 import { TallyTable } from "./_components/TallyTable";
-import { VerificationDetails } from "./_components/VerificationDetails";
-import { VerifyBallot } from "./_components/VerifyBallot";
+import { VerificationSection } from "./_components/VerificationSection";
+
+const METHOD_LABELS: Record<string, string> = {
+  single: "Single Choice",
+  approval: "Approval Voting",
+  ranked: "Ranked Choice",
+  score: "Score Voting",
+};
 
 function ResultsContent() {
   const searchParams = useSearchParams();
@@ -74,17 +80,37 @@ function ResultsContent() {
           ← Back to Home
         </Link>
 
-        <h1 className="mb-2 text-3xl font-bold tracking-tight">
-          Election Results
-        </h1>
-        <p className="mb-8 text-zinc-400">
-          View the final results and verify your vote was counted.
-        </p>
+        {/* Election header */}
+        <div className="mb-8 flex items-start gap-4">
+          {config.emoji && (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-3xl">
+              {config.emoji}
+            </div>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {config.title}
+            </h1>
+            {config.description && (
+              <p className="mt-1 text-zinc-400">{config.description}</p>
+            )}
+            <p className="mt-1 text-sm text-zinc-500">
+              {METHOD_LABELS[config.votingMethod] ?? config.votingMethod} · {config.candidates.length} candidates
+            </p>
+          </div>
+        </div>
 
-        <ElectionInfo config={config} electionId={electionId} />
+        <ResultsChart config={config} tally={result.tally} />
         <TallyTable config={config} tally={result.tally} />
-        <VerificationDetails result={result} />
-        <VerifyBallot result={result} config={config} />
+        <VerificationSection result={result} config={config} />
+
+        {/* Election ID footer */}
+        <div className="mt-8 text-center">
+          <span className="text-xs text-zinc-500">Election ID: </span>
+          <span className="font-mono text-xs text-zinc-600 break-all">
+            {electionId}
+          </span>
+        </div>
       </div>
     </div>
   );
