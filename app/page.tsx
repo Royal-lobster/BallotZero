@@ -8,6 +8,9 @@ import {
   Vote,
   BarChart3,
   ShieldCheck,
+  Lock,
+  BadgeCheck,
+  Globe,
 } from "lucide-react";
 
 const steps = [
@@ -101,23 +104,37 @@ export default function Home() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 text-left">
-          <div className="rounded-xl border border-zinc-800 p-6">
-            <h3 className="mb-2 font-semibold">🔒 Private Ballots</h3>
-            <p className="text-sm text-zinc-400">
+          <div className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-colors hover:border-amber-500/30">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 ring-1 ring-amber-500/20">
+              <Lock size={20} className="text-amber-400" />
+            </div>
+            <h3 className="mb-2 font-semibold">Private Ballots</h3>
+            <p className="text-sm leading-relaxed text-zinc-400">
               Your vote is kept secret using math — no one, not even the person
               running the election, can see how you voted.
             </p>
           </div>
-          <div className="rounded-xl border border-zinc-800 p-6">
-            <h3 className="mb-2 font-semibold">✅ Verifiable</h3>
-            <p className="text-sm text-zinc-400">
+
+          <div className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-colors hover:border-emerald-500/30">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent" />
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/20">
+              <BadgeCheck size={20} className="text-emerald-400" />
+            </div>
+            <h3 className="mb-2 font-semibold">Verifiable</h3>
+            <p className="text-sm leading-relaxed text-zinc-400">
               You can confirm your vote was counted, and anyone can double-check
               the final results.
             </p>
           </div>
-          <div className="rounded-xl border border-zinc-800 p-6">
-            <h3 className="mb-2 font-semibold">🌐 No Central Authority</h3>
-            <p className="text-sm text-zinc-400">
+
+          <div className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-colors hover:border-sky-500/30">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-500/60 to-transparent" />
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-sky-500/10 ring-1 ring-sky-500/20">
+              <Globe size={20} className="text-sky-400" />
+            </div>
+            <h3 className="mb-2 font-semibold">No Central Authority</h3>
+            <p className="text-sm leading-relaxed text-zinc-400">
               There's no central server or authority that could rig the results.
               The math guarantees a fair count.
             </p>
