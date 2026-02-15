@@ -1,7 +1,7 @@
 "use client";
 
 import { ConnectKitButton } from "connectkit";
-
+import { Send } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
@@ -218,8 +218,9 @@ function ElectionPageContent() {
               disabled={
                 isSubmitDisabled() || (!!status && !status.startsWith("Error"))
               }
-              className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center gap-2 rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
             >
+              <Send size={14} />
               Submit Vote
             </button>
           </div>

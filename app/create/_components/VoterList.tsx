@@ -1,5 +1,6 @@
 import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
+import { Check, Copy, UserPlus, X } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { AddressAvatar } from "../../_components/AddressAvatar";
 import { truncateAddress } from "../../_components/utils";
@@ -61,17 +62,19 @@ export function VoterList({
           <button
             type="button"
             onClick={copyJoinLink}
-            className="rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
           >
+            {copied ? <Check size={12} /> : <Copy size={12} />}
             {copied ? "Copied!" : "Copy join link"}
           </button>
           {addressBookEntries.length > 0 && (
             <button
               type="button"
               onClick={onAddFromAddressBook}
-              className="rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+              className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
             >
-              + Add known ({addressBookEntries.length})
+              <UserPlus size={12} />
+              Add known ({addressBookEntries.length})
             </button>
           )}
         </div>
@@ -144,10 +147,10 @@ export function VoterList({
                 <button
                   type="button"
                   onClick={() => onRemove(voter.address)}
-                  className="shrink-0 text-zinc-500 transition-colors hover:text-red-400"
+                  className="shrink-0 rounded p-1 text-zinc-500 transition-colors hover:text-red-400"
                   aria-label={`Remove voter ${voter.address}`}
                 >
-                  x
+                  <X size={14} />
                 </button>
               </div>
             );

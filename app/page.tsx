@@ -84,20 +84,23 @@ export default function Home() {
         <div className="flex flex-col gap-4 sm:flex-row">
           <Link
             href="/create"
-            className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
+            className="flex items-center justify-center gap-2 rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
           >
+            <PlusCircle size={16} />
             Create Election
           </Link>
           <Link
             href="/join"
-            className="rounded-full border border-zinc-700 px-8 py-3 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
+            className="flex items-center justify-center gap-2 rounded-full border border-zinc-700 px-8 py-3 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
           >
+            <UserPlus size={16} />
             Join an Election
           </Link>
           <Link
             href="/tally"
-            className="rounded-full border border-zinc-700 px-8 py-3 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
+            className="flex items-center justify-center gap-2 rounded-full border border-zinc-700 px-8 py-3 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
           >
+            <BarChart3 size={16} />
             Tally Results
           </Link>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Theme as EmojiTheme } from "emoji-picker-react";
+import { PlusCircle } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
@@ -170,8 +171,9 @@ export default function CreateElectionPage() {
         <button
           type="button"
           onClick={onSubmit}
-          className="w-full rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
         >
+          <PlusCircle size={16} />
           Create Election
         </button>
       </div>
