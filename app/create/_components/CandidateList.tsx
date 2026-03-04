@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Shuffle, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Shuffle, X } from "lucide-react";
 import { useState } from "react";
 
 interface CandidateListProps {
@@ -66,8 +66,9 @@ export function CandidateList({
               setCandidateInput("");
             }
           }}
-          className="shrink-0 rounded-lg border border-zinc-700 px-4 py-3 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:bg-zinc-800"
+          className="flex shrink-0 items-center gap-1.5 rounded-lg border border-zinc-700 px-4 py-3 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:bg-zinc-800"
         >
+          <Plus size={14} />
           Add
         </button>
       </div>

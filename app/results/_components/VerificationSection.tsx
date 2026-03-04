@@ -1,6 +1,7 @@
 "use client";
 
 import { ConnectKitButton } from "connectkit";
+import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import { AddressAvatar } from "../../_components/AddressAvatar";
@@ -88,8 +89,9 @@ export function VerificationSection({
           <button
             type="button"
             onClick={handleVerify}
-            className="rounded-full border border-zinc-700 px-6 py-2 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
+            className="flex items-center gap-2 rounded-full border border-zinc-700 px-6 py-2 text-sm font-semibold transition-colors hover:border-zinc-500 hover:bg-zinc-900"
           >
+            <ShieldCheck size={14} />
             Verify Inclusion
           </button>
         )}

@@ -11,7 +11,7 @@ A fully client-side voting system using a [Dining Cryptographers Network](https:
 
 [![Blog Post](https://img.shields.io/badge/Blog-Anonymous_Votes_with_Math-blue)](https://srujangurram.me/blog/anonymous-votes-with-math)
 
-<img src="screenshot.png" width="600" alt="BallotZero Screenshot" />
+<img src="screen.png" width="600" alt="BallotZero Screenshot" />
 
 </div>
 

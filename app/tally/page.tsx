@@ -1,5 +1,6 @@
 "use client";
 
+import { Calculator, Check, Copy, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
@@ -135,8 +136,9 @@ function AggregateContent() {
                 <button
                   type="button"
                   onClick={() => { setConfigBase64(""); setLinkInput(""); }}
-                  className="shrink-0 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+                  className="flex shrink-0 items-center gap-1 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
                 >
+                  <RefreshCw size={10} />
                   Change
                 </button>
               </div>
@@ -169,8 +171,9 @@ function AggregateContent() {
                 <button
                   type="button"
                   onClick={copyElectionLink}
-                  className="rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+                  className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
                 >
+                  {copiedElectionLink ? <Check size={12} /> : <Copy size={12} />}
                   {copiedElectionLink ? "Copied!" : "Copy Election Link"}
                 </button>
               </div>
@@ -241,8 +244,9 @@ function AggregateContent() {
               !configBase64 ||
               ballotState.ballots.length === 0
             }
-            className="w-full rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
+            <Calculator size={16} />
             {aggregation.processing ? "Counting..." : "Count Votes"}
           </button>
         </div>
