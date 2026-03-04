@@ -1,5 +1,6 @@
 import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
+import { X } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { AddressAvatar } from "../../_components/AddressAvatar";
 import { truncateAddress } from "../../_components/utils";
@@ -147,7 +148,7 @@ export function VoterList({
                   className="shrink-0 text-zinc-500 transition-colors hover:text-red-400"
                   aria-label={`Remove voter ${voter.address}`}
                 >
-                  x
+                  <X size={16} />
                 </button>
               </div>
             );
